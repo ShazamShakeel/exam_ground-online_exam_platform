@@ -1,3 +1,3 @@
 export default function LandingPage() {
-  return <div>Exam Ground</div>;
+  return <h1>Exam Ground</h1>;
 }
