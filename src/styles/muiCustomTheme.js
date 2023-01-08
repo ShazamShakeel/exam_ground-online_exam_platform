@@ -19,10 +19,10 @@ const theme = createTheme({
     borderRadius: 6,
   },
   components: {
-    MuiLink: {
+    MuiButton: {
       styleOverrides: {
         root: {
-          textDecoration: "none",
+          textTransform: "none",
         },
       },
     },

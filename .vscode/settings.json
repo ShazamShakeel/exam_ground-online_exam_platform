@@ -21,8 +21,10 @@
     "commitlint",
     "fontsource",
     "highrise",
+    "hookform",
     "persistor",
     "reduxjs",
+    "Signup",
     "toastify"
   ]
 }
