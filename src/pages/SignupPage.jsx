@@ -10,24 +10,26 @@ import {
   Tabs,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import * as Yup from "yup";
 
 export default function SignupPage() {
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
   const [selectedTab, setSelectedTab] = useState("teacher");
 
   const validationSchema = Yup.object().shape({
     employeeId: Yup.string().when([], {
       is: () => selectedTab === "teacher",
-      then: Yup.string().required("Required").min(4).max(6),
+      then: Yup.string().required("Required").min(6).max(12),
       otherwise: Yup.string().notRequired(),
     }),
     studentId: Yup.string().when([], {
       is: () => selectedTab === "student",
-      then: Yup.string().required("Required").min(4).max(6),
+      then: Yup.string().required("Required").min(6).max(12),
       otherwise: Yup.string().notRequired(),
     }),
     firstName: Yup.string().required("Required").max(12),
@@ -42,12 +44,15 @@ export default function SignupPage() {
       ),
     password: Yup.string()
       .required("Password is required")
-      .min(6, "Password must be at least 6 characters")
-      .max(12, "Password must be less than 12 characters"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Passwords must be match"
-    ),
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/,
+        "Password must contain at least one letter and one number"
+      )
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must be at most 16 characters"),
+    confirmPassword: Yup.string()
+      .required("Confirm password is required")
+      .oneOf([Yup.ref("password"), null], "Passwords must be match"),
   });
 
   const {
@@ -70,6 +75,7 @@ export default function SignupPage() {
 
   const onSubmit = (data) => {
     console.log("onSubmit", data);
+    <Navigate to="/register-face" />;
   };
 
   const handleTabChange = (_, newValue) => {
@@ -77,29 +83,43 @@ export default function SignupPage() {
   };
 
   return (
-    <>
+    <Box position="relative">
       <Stack
         direction="row"
-        spacing={2}
+        gap={2}
         justifyContent="end"
         alignItems="center"
         maxHeight="80px"
-        p={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+        pt={{ xs: 1, sm: 2, md: 2 }}
+        pr={{ xs: 1, sm: 2, md: 2 }}
+        position={{ lg: "absolute" }}
+        top={{ lg: 0 }}
+        right={{ lg: 0 }}
       >
         <Typography variant="body2" component="h2">
           Already have an account ?
         </Typography>
         <Link to="/login">
-          <Button variant="contained" color="primary" size="small">
+          <Button
+            variant="contained"
+            color="primary"
+            size={isSmallScreen ? "small" : "medium"}
+          >
             Login
           </Button>
         </Link>
       </Stack>
-      <Container component="main" maxWidth="sm" mx="auto">
+      <Container
+        component="main"
+        sx={{
+          maxWidth: { xs: "100%", sm: "85vw", md: "60vw", lg: "50vw" },
+        }}
+      >
         <Paper
-          variant="outlined"
+          elevation={16}
           sx={{
             p: { xs: 1, sm: 1.5, md: 2 },
+            m: { xs: 1, sm: 1.5, md: 2 },
           }}
         >
           <Stack direction="row" justifyContent="center">
@@ -162,7 +182,7 @@ export default function SignupPage() {
                   )}
                 />
               )}
-              <Stack direction="row" gap={2}>
+              <Stack direction={{ xs: "column", md: "row" }} gap={2}>
                 <Controller
                   name="firstName"
                   control={control}
@@ -252,7 +272,7 @@ export default function SignupPage() {
                 render={({ field }) => (
                   <TextField
                     name="confirmPassword"
-                    label="confirmPassword"
+                    label="Confirm Password"
                     type="password"
                     size="small"
                     fullWidth
@@ -275,6 +295,6 @@ export default function SignupPage() {
           </form>
         </Paper>
       </Container>
-    </>
+    </Box>
   );
 }
