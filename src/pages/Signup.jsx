@@ -1,9 +1,9 @@
 import { useMediaQuery } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import RegisterFaceContainer from "components/authentication/RegisterFaceContainer";
 import AuthSideContent from "components/authentication/SideContent";
+import SignUpForm from "components/authentication/SignUpForm";
 
-export default function SignupVerification() {
+export default function Signup() {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   return (
     <Grid container component="main" height="100vh">
@@ -13,7 +13,7 @@ export default function SignupVerification() {
         </Grid>
       )}
       <Grid item xs={12} md={6}>
-        <RegisterFaceContainer />
+        <SignUpForm />
       </Grid>
     </Grid>
   );

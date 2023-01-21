@@ -1,3 +1,106 @@
+/* 
+  ##Device = Desktops
+  ##Screen = 1281px to higher resolution desktops
+*/
+
+@media (min-width: 1280px) {
+  /* CSS */
+  html {
+    font-size: 16px;
+  }
+}
+
+/* 
+  ##Device = Laptops, Desktops
+  ##Screen = B/w 1025px to 1280px
+*/
+
+@media (min-width: 1025px) and (max-width: 1279px) {
+  /* CSS */
+  html {
+    font-size: 14px;
+  }
+}
+
+/* 
+  ##Device = Tablets, Ipads (portrait)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* CSS */
+  html {
+    font-size: 12px;
+  }
+}
+
+/* 
+  ##Device = Tablets, Ipads (landscape)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  /* CSS */
+  html {
+    font-size: 12px;
+  }
+}
+
+/* 
+  ##Device = Low Resolution Tablets, Mobiles (Landscape)
+  ##Screen = B/w 481px to 767px
+*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+  /* CSS */
+  html {
+    font-size: 12px;
+  }
+}
+
+/* 
+  ##Device = Most of the Smartphones Mobiles (Portrait)
+  ##Screen = B/w 320px to 479px
+*/
+
+@media (min-width: 320px) and (max-width: 480px) {
+  /* CSS */
+  html {
+    font-size: 12px;
+  }
+}
+
 a {
   text-decoration: none;
+}
+
+/* React Verification Code Input CSS */
+.code-input {
+  margin-bottom: 10px;
+  margin-top: 0px;
+}
+
+.code-input input {
+  font-weight: bold !important;
+  font-family: "Roboto" !important;
+  color: #068ecf !important;
+}
+
+.code-input div {
+  display: flex;
+}
+
+@media (min-width: 1280px) {
+  .code-input {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .code-input {
+    width: 250px !important;
+  }
+  .code-input input {
+    width: 45px !important;
+  }
 }
