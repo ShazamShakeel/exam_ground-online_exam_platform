@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
-export default function LoginPage() {
+export default function Login() {
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Please provide your university email")

@@ -12,8 +12,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Poppins",
-    fontSize: 16,
+    fontFamily: "Roboto",
   },
   breakpoints: {
     values: {
@@ -25,7 +24,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 20,
+    borderRadius: 5,
   },
   components: {
     MuiButton: {

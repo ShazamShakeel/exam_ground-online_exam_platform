@@ -17,8 +17,8 @@ import { Controller, useForm } from "react-hook-form";
 import { Link, Navigate } from "react-router-dom";
 import * as Yup from "yup";
 
-export default function SignupPage() {
-  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
+export default function SignUpForm() {
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [selectedTab, setSelectedTab] = useState("teacher");
 
   const validationSchema = Yup.object().shape({
@@ -75,7 +75,7 @@ export default function SignupPage() {
 
   const onSubmit = (data) => {
     console.log("onSubmit", data);
-    <Navigate to="/register-face" />;
+    <Navigate to="/signup-verification" />;
   };
 
   const handleTabChange = (_, newValue) => {
@@ -83,60 +83,49 @@ export default function SignupPage() {
   };
 
   return (
-    <Box position="relative">
-      <Stack
-        direction="row"
-        gap={2}
-        justifyContent="end"
-        alignItems="center"
-        maxHeight="80px"
-        pt={{ xs: 1, sm: 2, md: 2 }}
-        pr={{ xs: 1, sm: 2, md: 2 }}
-        position={{ lg: "absolute" }}
-        top={{ lg: 0 }}
-        right={{ lg: 0 }}
-      >
-        <Typography variant="body2" component="h2">
-          Already have an account ?
-        </Typography>
-        <Link to="/login">
-          <Button
-            variant="contained"
-            color="primary"
-            size={isSmallScreen ? "small" : "medium"}
-          >
-            Login
-          </Button>
-        </Link>
-      </Stack>
-      <Container
-        component="main"
-        sx={{
-          maxWidth: { xs: "100%", sm: "85vw", md: "60vw", lg: "50vw" },
-        }}
-      >
+    <Box
+      height="100%"
+      display="flex"
+      flexDirection={{ xs: "column", md: "row" }}
+      alignItems={{ md: "center" }}
+      gap={2}
+    >
+      {isSmall && (
+        <Stack
+          direction="row"
+          gap={2}
+          justifyContent="flex-end"
+          alignItems="center"
+          maxHeight="80px"
+          pt={{ xs: 1, sm: 2 }}
+          pr={{ xs: 1, sm: 2 }}
+        >
+          <Typography variant="body2" component="h2">
+            Already have an account ?
+          </Typography>
+          <Link to="/login">
+            <Button variant="contained" color="primary">
+              Login
+            </Button>
+          </Link>
+        </Stack>
+      )}
+      <Container component="main">
         <Paper
           elevation={16}
           sx={{
-            p: { xs: 1, sm: 1.5, md: 2 },
-            m: { xs: 1, sm: 1.5, md: 2 },
+            p: { xs: 1, sm: 1.5, md: 2, lg: 4 },
+            mx: { xs: 1, sm: 1.5, md: 2, lg: 4 },
           }}
         >
-          <Stack direction="row" justifyContent="center">
-            <img
-              src={require("assets/images/Site-Logo.png")}
-              alt="login"
-              height="150px"
-              width="175px"
-            />
-          </Stack>
           <Typography
             variant="h6"
             component="h1"
             textAlign="center"
             fontWeight="bold"
             color="primary"
-            mb={2}
+            m={1}
+            fontSize={{ sm: "1.25rem", md: "2rem", lg: "2.75rem", xl: "3rem" }}
           >
             Sign up
           </Typography>
@@ -288,6 +277,7 @@ export default function SignupPage() {
                 variant="contained"
                 color="primary"
                 fullWidth
+                sx={{ fontWeight: "bold" }}
               >
                 Sign up
               </Button>
