@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 import AnalyzeExamMarketingSection from "assets/icons/AnalyzeExamMarketingSection.svg";
 import CreateExamMarketingSection from "assets/icons/CreateExamMarketingSection.svg";
 import UploadExamMarketingSection from "assets/icons/UploadExamMarketingSection.svg";
@@ -7,7 +7,7 @@ export default function MarketingSection() {
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   return (
     <>
-      <Grid container>
+      <Grid container bgcolor="white">
         <Grid item xs={12} md={4} px={3} py={{ xs: 1, md: 0 }}>
           <Stack direction="column" justifyContent="center" alignItems="center">
             <img
@@ -74,7 +74,6 @@ export default function MarketingSection() {
           </Stack>
         </Grid>
       </Grid>
-      <Divider variant="middle" sx={{ my: 4 }} />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import FeatureSection from "components/landingPage/FeatureSection";
+import Footer from "components/landingPage/Footer";
 import Header from "components/landingPage/Header";
 import HeroSection from "components/landingPage/HeroSection";
 import MarketingSection from "components/landingPage/MarketingSection";
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <MarketingSection />
       <FeatureSection />
       <UsersSection />
+      <Footer />
     </>
   );
 }

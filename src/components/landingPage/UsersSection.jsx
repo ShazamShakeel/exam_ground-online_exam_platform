@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Container, Grid, Typography, useMediaQuery } from "@mui/material";
 import Candidates from "assets/icons/Candidates.svg";
 import Teachers from "assets/icons/Teachers.svg";
 
@@ -13,7 +6,7 @@ export default function UsersSection() {
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   return (
-    <Box py={2}>
+    <Box py={2} bgcolor="white">
       <Typography variant="h4" textAlign="center" py={2}>
         Who uses <strong>Exam Ground</strong>
       </Typography>
@@ -86,7 +79,6 @@ export default function UsersSection() {
           </Grid>
         </Grid>
       </Container>
-      <Divider variant="middle" sx={{ my: 4 }} />
     </Box>
   );
 }

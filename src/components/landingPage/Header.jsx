@@ -30,7 +30,7 @@ export default function Header() {
           to="/signup"
           variant="contained"
           color="secondary"
-          size={isSmall ? "small" : "large"}
+          size={isSmall ? "small" : "medium"}
         >
           Sign Up
         </Button>
@@ -39,7 +39,7 @@ export default function Header() {
           to="/login"
           variant="contained"
           color="primary"
-          size={isSmall ? "small" : "large"}
+          size={isSmall ? "small" : "medium"}
         >
           Login
         </Button>

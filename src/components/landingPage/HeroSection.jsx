@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Grid, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   return (
@@ -30,9 +31,11 @@ export default function HeroSection() {
             and companies everyday.
           </Typography>
           <Button
+            component={Link}
             variant="contained"
             color="primary"
             size="large"
+            to="/signup"
             sx={{
               maxWidth: { xs: "150px", md: "200px" },
             }}

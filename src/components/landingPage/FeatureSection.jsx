@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Container, Grid, Typography, useMediaQuery } from "@mui/material";
 import AutoGrading from "assets/icons/AutoGrading.svg";
 import Clock from "assets/icons/Clock.svg";
 import Mobile from "assets/icons/Mobile.svg";
@@ -279,7 +272,6 @@ export default function FeatureSection() {
           </Grid>
         </Grid>
       </Container>
-      <Divider variant="middle" sx={{ my: 4 }} />
     </Box>
   );
 }
