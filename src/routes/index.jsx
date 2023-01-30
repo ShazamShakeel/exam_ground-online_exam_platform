@@ -8,6 +8,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -17,6 +18,10 @@ const routes = createBrowserRouter(
       <Route path="signup" element={<Signup />} />
       <Route path="signup-verification" element={<SignupVerification />} />
       <Route path="register-face" element={<RegisterFace />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<div>Dashboard</div>} />
+        <Route path="student-dashboard" element={<div>StudentDashboard</div>} />
+      </Route>
     </>
   )
 );
