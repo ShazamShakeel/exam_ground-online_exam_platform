@@ -1,3 +1,4 @@
+import Layout from "layout/Layout";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import RegisterFace from "pages/RegisterFace";
@@ -18,6 +19,7 @@ const routes = createBrowserRouter(
       <Route path="signup" element={<Signup />} />
       <Route path="signup-verification" element={<SignupVerification />} />
       <Route path="register-face" element={<RegisterFace />} />
+      <Route path="layout" element={<Layout />} />
       <Route element={<ProtectedRoute />}>
         <Route path="dashboard" element={<div>Dashboard</div>} />
         <Route path="student-dashboard" element={<div>StudentDashboard</div>} />
