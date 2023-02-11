@@ -13,11 +13,14 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { userLogin } from "store/slices/authSlice";
 import * as Yup from "yup";
 
 export default function LoginForm() {
   const faceio = useRef(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
@@ -48,7 +51,20 @@ export default function LoginForm() {
   });
 
   const onSubmit = (data) => {
-    console.log("onSubmit", data);
+    console.log({ data });
+    dispatch(
+      userLogin({
+        token: "token",
+        id: "123456",
+        email: "teacher@university.edu.pk",
+        name: "Teacher",
+        userId: "123456",
+        userRole: "teacher",
+        university: "University",
+        isVerified: true,
+      })
+    );
+    navigate("/dashboard");
   };
 
   const handleLoginWithFaceId = () => {
@@ -56,7 +72,7 @@ export default function LoginForm() {
       .authenticate()
       .then((res) => {
         console.log(res);
-        navigate("dashboard");
+        navigate("/dashboard");
       })
       .catch((err) => console.log(err));
   };
@@ -142,7 +158,6 @@ export default function LoginForm() {
                     type="password"
                     size="small"
                     fullWidth
-                    autoFocus
                     error={!!errors.password}
                     helperText={errors?.password?.message}
                     autoComplete="off"

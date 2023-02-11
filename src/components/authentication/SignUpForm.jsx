@@ -14,10 +14,14 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link, Navigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { userSignup } from "store/slices/authSlice";
 import * as Yup from "yup";
 
 export default function SignUpForm() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [selectedTab, setSelectedTab] = useState("teacher");
 
@@ -75,7 +79,19 @@ export default function SignUpForm() {
 
   const onSubmit = (data) => {
     console.log("onSubmit", data);
-    <Navigate to="/signup-verification" />;
+    dispatch(
+      userSignup({
+        token: "token",
+        id: "123456",
+        email: "teacher@university.edu.pk",
+        name: "Teacher",
+        userId: "123456",
+        userRole: "teacher",
+        university: "University",
+        isVerified: false,
+      })
+    );
+    navigate("/signup-verification");
   };
 
   const handleTabChange = (_, newValue) => {

@@ -8,12 +8,14 @@ import {
 } from "@mui/material";
 import FaceIdLogo from "assets/images/FaceId-Logo.svg";
 import { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterFaceContainer() {
   const faceio = useRef(null);
   const navigate = useNavigate();
   const isLarge = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const email = useSelector((state) => state.auth.email);
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
@@ -22,17 +24,19 @@ export default function RegisterFaceContainer() {
 
   const handleRegisterFaceId = () => {
     faceio.current
-      .authenticate()
+      .enroll({
+        email,
+      })
       .then((res) => {
         console.log(res);
-        navigate("dashboard");
+        navigate("/dashboard");
       })
       .catch((err) => console.log(err));
   };
 
   const handleSkip = () => {
     console.log("click");
-    navigate("dashboard");
+    navigate("/dashboard");
   };
   return (
     <Box height="100%" display="flex" alignItems="center">

@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function ProtectedRoute() {
-  const isVerified = localStorage.getItem("verified");
+  const isVerified = localStorage.getItem("isVerified");
   const token = localStorage.getItem("token");
 
   if (isVerified && token) {
