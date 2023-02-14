@@ -74,7 +74,7 @@ export default function LoginForm() {
         console.log(res);
         navigate("/dashboard");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {

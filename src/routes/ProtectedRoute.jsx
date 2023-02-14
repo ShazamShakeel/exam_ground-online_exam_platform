@@ -4,12 +4,12 @@ export default function ProtectedRoute() {
   const isVerified = localStorage.getItem("isVerified");
   const token = localStorage.getItem("token");
 
-  if (isVerified && token) {
+  if (token && isVerified === "true") {
     return <Outlet />;
   }
 
-  if (!isVerified && token) {
-    return <Navigate to="/signup-verification" />;
+  if (token && isVerified === "false") {
+    return <Navigate to="/verification" />;
   }
 
   return <Navigate to="/login" />;

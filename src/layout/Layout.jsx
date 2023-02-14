@@ -119,7 +119,7 @@ export default function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Box ml="auto">
+          <Box ml="auto" hidden={isOpen && isSmall}>
             <Box display="flex" alignItems="center">
               <Box
                 sx={{

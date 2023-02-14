@@ -91,7 +91,7 @@ export default function SignUpForm() {
         isVerified: false,
       })
     );
-    navigate("/signup-verification");
+    navigate("/verification");
   };
 
   const handleTabChange = (_, newValue) => {

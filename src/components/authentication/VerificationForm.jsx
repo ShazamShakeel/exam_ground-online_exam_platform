@@ -80,7 +80,7 @@ export default function VerificationForm() {
                 isVerified: true,
               })
             );
-            navigate("/dashboard");
+            navigate("/register-face");
           }}
         >
           NEXT
