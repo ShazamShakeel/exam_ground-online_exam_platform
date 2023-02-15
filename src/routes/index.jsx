@@ -1,4 +1,6 @@
 import Layout from "layout/Layout";
+import NotFound from "pages/404";
+import Dashboard from "pages/Dashboard";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import RegisterFace from "pages/RegisterFace";
@@ -10,20 +12,24 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import VerificationRoute from "./VerificationRoute";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route index element={<LandingPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route index path="dashboard" element={<Dashboard />} />
+        </Route>
+        <Route path="register-face" element={<RegisterFace />} />
+      </Route>
+      <Route element={<VerificationRoute />}>
+        <Route index path="verification" element={<SignupVerification />} />
+      </Route>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
-      <Route path="signup-verification" element={<SignupVerification />} />
-      <Route path="register-face" element={<RegisterFace />} />
-      <Route path="layout" element={<Layout />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="dashboard" element={<div>Dashboard</div>} />
-        <Route path="student-dashboard" element={<div>StudentDashboard</div>} />
-      </Route>
+      <Route path="*" element={<NotFound />} />
     </>
   )
 );

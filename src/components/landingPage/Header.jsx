@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const token = localStorage.getItem("token");
   return (
     <Stack
       component="header"
@@ -24,26 +25,37 @@ export default function Header() {
           Exam Ground
         </Typography>
       </Stack>
-      <Stack direction="row" alignItems="center" spacing={{ xs: 1, md: 2 }}>
+      {token ? (
         <Button
           component={Link}
-          to="/signup"
+          to="/dashboard"
           variant="contained"
-          color="secondary"
           size={isSmall ? "small" : "medium"}
         >
-          Sign Up
+          Dashboard
         </Button>
-        <Button
-          component={Link}
-          to="/login"
-          variant="contained"
-          color="primary"
-          size={isSmall ? "small" : "medium"}
-        >
-          Login
-        </Button>
-      </Stack>
+      ) : (
+        <Stack direction="row" alignItems="center" spacing={{ xs: 1, md: 2 }}>
+          <Button
+            component={Link}
+            to="/signup"
+            variant="contained"
+            color="secondary"
+            size={isSmall ? "small" : "medium"}
+          >
+            Sign Up
+          </Button>
+          <Button
+            component={Link}
+            to="/login"
+            variant="contained"
+            color="primary"
+            size={isSmall ? "small" : "medium"}
+          >
+            Login
+          </Button>
+        </Stack>
+      )}
     </Stack>
   );
 }

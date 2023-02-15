@@ -20,7 +20,7 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import StudentSidebarListItems from "utils/constants/StudentSidebarListItems";
 import TeacherSidebarListItems from "utils/constants/TeacherSidebarListItems";
 
@@ -72,6 +72,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function Layout() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [listItems] = useState(
@@ -119,7 +120,7 @@ export default function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Box ml="auto">
+          <Box ml="auto" hidden={isOpen && isSmall}>
             <Box display="flex" alignItems="center">
               <Box
                 sx={{
@@ -152,8 +153,10 @@ export default function Layout() {
                     backgroundColor: "#fff",
                   }}
                 >
-                  <MenuItem>Profile</MenuItem>
-                  <MenuItem>Logout</MenuItem>
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/")}>Logout</MenuItem>
                 </Select>
               </Box>
             </Box>
@@ -206,7 +209,14 @@ export default function Layout() {
             {listItems.map((route) => (
               <ListItem key={route?.path} disablePadding>
                 <ListItemButton to={route?.path} component={NavLink}>
-                  <ListItemIcon>{route.icon}</ListItemIcon>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: "35px",
+                      color: "primary.main",
+                    }}
+                  >
+                    {route.icon}
+                  </ListItemIcon>
                   <ListItemText
                     primary={
                       <Typography variant="h6" fontWeight="bold">
@@ -223,7 +233,12 @@ export default function Layout() {
           <List>
             <ListItem disablePadding>
               <ListItemButton to="/settings" component={NavLink}>
-                <ListItemIcon>
+                <ListItemIcon
+                  sx={{
+                    minWidth: "35px",
+                    color: "primary.main",
+                  }}
+                >
                   <Settings />
                 </ListItemIcon>
                 <ListItemText
@@ -238,7 +253,7 @@ export default function Layout() {
           </List>
         </Box>
       </Drawer>
-      <Main open={isOpen}>
+      <Main open={isOpen} sx={{ p: 1.5 }}>
         <DrawerHeader />
         <Outlet />
       </Main>

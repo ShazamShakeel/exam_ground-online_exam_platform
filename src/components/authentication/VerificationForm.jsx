@@ -5,13 +5,17 @@ import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import ReactCodeInput from "react-verification-code-input";
+import { userEmailVerification } from "store/slices/authSlice";
 
 export default function VerificationForm() {
-  const loading = useSelector((state) => state.user.loading);
-  const phoneNumber = useSelector((state) => state.user.data.user.phone ?? "");
-  const [phoneOTP, setPhoneOTP] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const loading = useSelector((state) => state.auth.loading);
+  const email = useSelector((state) => state.auth.email);
+  const [emailOTP, setEmailOTP] = useState("");
 
   return (
     <Container>
@@ -43,11 +47,11 @@ export default function VerificationForm() {
         <ReactCodeInput
           autoFocus
           type="number"
-          onChange={setPhoneOTP}
+          onChange={setEmailOTP}
           className="code-input"
         />
         <Typography variant="body1" color="text.secondary">
-          {`Please enter the verification code sent on ${phoneNumber}`}
+          {`Please enter the verification code sent on ${email}`}
         </Typography>
         <Box display="flex" alignItems="center" justifyContent="center">
           <Typography color="text.secondary">
@@ -65,11 +69,19 @@ export default function VerificationForm() {
         </Box>
         <Button
           fullWidth
-          disabled={loading || phoneOTP.length < 6}
+          disabled={loading || emailOTP.length < 6}
           type="submit"
           variant="contained"
           color="primary"
           startIcon={loading && <CircularProgress size={20} thickness={6} />}
+          onClick={() => {
+            dispatch(
+              userEmailVerification({
+                isVerified: true,
+              })
+            );
+            navigate("/register-face");
+          }}
         >
           NEXT
         </Button>
