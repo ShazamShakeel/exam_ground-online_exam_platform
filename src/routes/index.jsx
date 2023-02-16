@@ -4,6 +4,7 @@ import Dashboard from "pages/Dashboard";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import RegisterFace from "pages/RegisterFace";
+import Settings from "pages/Settings";
 import Signup from "pages/Signup";
 import SignupVerification from "pages/SignupVerification";
 import {
@@ -21,6 +22,7 @@ const routes = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index path="dashboard" element={<Dashboard />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="register-face" element={<RegisterFace />} />
       </Route>
