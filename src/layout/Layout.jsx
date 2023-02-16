@@ -90,7 +90,7 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    isSmall && setIsOpen(false);
+    isSmall ? setIsOpen(false) : setIsOpen(true);
   }, [isSmall]);
 
   return (
