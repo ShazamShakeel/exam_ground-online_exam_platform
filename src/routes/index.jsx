@@ -1,5 +1,6 @@
 import Layout from "layout/Layout";
 import NotFound from "pages/404";
+import Announcements from "pages/Announcements";
 import Dashboard from "pages/Dashboard";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
@@ -22,6 +23,7 @@ const routes = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index path="dashboard" element={<Dashboard />} />
+          <Route path="announcements" element={<Announcements />} />
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="register-face" element={<RegisterFace />} />
