@@ -2,13 +2,13 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, Divider, IconButton, Stack, Typography } from "@mui/material";
-import StyledMuiDataGrid from "components/CustomDataGrid";
+import CustomDataGrid from "components/CustomDataGrid";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function Announcements() {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth);
+  // const user = useSelector((state) => state.auth);
   const loading = useSelector(
     (state) => state?.announcements?.loading ?? false
   );
@@ -176,7 +176,7 @@ function Announcements() {
           Add New Announcement
         </Button>
       </Stack>
-      <StyledMuiDataGrid
+      <CustomDataGrid
         loading={loading}
         rows={announcements}
         columns={columns}
