@@ -2,10 +2,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Divider, IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 function Students() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const user = useSelector((state) => state.auth);
   const loading = useSelector((state) => state?.students?.loading ?? false);
   const totalPages = 1;
