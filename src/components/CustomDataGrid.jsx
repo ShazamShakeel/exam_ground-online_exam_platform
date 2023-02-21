@@ -38,6 +38,7 @@ const CustomDataGrid = ({
         loading={loading}
         autoHeight
         disableSelectionOnClick
+        checkboxSelection
         getRowHeight={() => "auto"}
         getRowSpacing={(params) => ({
           top: params.isFirstVisible ? 0 : 10,
@@ -67,7 +68,7 @@ const containerStyles = {
   },
   "& .MuiDataGrid-row": {
     backgroundColor: "#fff",
-    p: 1,
+    py: 1,
     boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
   },
   "& .MuiDataGrid-row:hover": {

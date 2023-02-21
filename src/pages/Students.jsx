@@ -15,7 +15,6 @@ function Students() {
       name: "John Doe",
       university: "Example University",
       coursesEnrolled: 4,
-      examsAttempted: 12,
     },
     {
       id: 2,
@@ -23,7 +22,6 @@ function Students() {
       name: "Jane Smith",
       university: "Another University",
       coursesEnrolled: 3,
-      examsAttempted: 10,
     },
     {
       id: 3,
@@ -31,7 +29,6 @@ function Students() {
       name: "Bob Johnson",
       university: "Yet Another University",
       coursesEnrolled: 5,
-      examsAttempted: 15,
     },
     {
       id: 4,
@@ -39,7 +36,6 @@ function Students() {
       name: "Samantha Lee",
       university: "Example University",
       coursesEnrolled: 2,
-      examsAttempted: 8,
     },
     {
       id: 5,
@@ -47,7 +43,6 @@ function Students() {
       name: "David Garcia",
       university: "Another University",
       coursesEnrolled: 6,
-      examsAttempted: 18,
     },
     {
       id: 6,
@@ -55,7 +50,6 @@ function Students() {
       name: "Emily Chen",
       university: "Yet Another University",
       coursesEnrolled: 4,
-      examsAttempted: 11,
     },
     {
       id: 7,
@@ -63,7 +57,6 @@ function Students() {
       name: "Michael Kim",
       university: "Example University",
       coursesEnrolled: 3,
-      examsAttempted: 9,
     },
     {
       id: 8,
@@ -71,7 +64,6 @@ function Students() {
       name: "Lisa Patel",
       university: "Another University",
       coursesEnrolled: 7,
-      examsAttempted: 21,
     },
     {
       id: 9,
@@ -79,7 +71,6 @@ function Students() {
       name: "Daniel Rodriguez",
       university: "Yet Another University",
       coursesEnrolled: 5,
-      examsAttempted: 16,
     },
     {
       id: 10,
@@ -87,7 +78,6 @@ function Students() {
       name: "Maria Hernandez",
       university: "Example University",
       coursesEnrolled: 4,
-      examsAttempted: 13,
     },
   ];
 
@@ -128,15 +118,6 @@ function Students() {
       flex: 0.25,
       renderCell: (params) => (
         <Typography variant="body2">{params?.row?.coursesEnrolled}</Typography>
-      ),
-    },
-    {
-      field: "examsAttempted",
-      headerName: "Exams Attempted",
-      minWidth: 150,
-      flex: 0.25,
-      renderCell: (params) => (
-        <Typography variant="body2">{params?.row?.examsAttempted}</Typography>
       ),
     },
     {
