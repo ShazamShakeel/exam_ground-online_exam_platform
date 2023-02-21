@@ -1,5 +1,6 @@
 import { Divider, Typography } from "@mui/material";
 import CoursesCardsWithPagination from "components/Courses/CoursesCardsWithPagination";
+import CoursesDataGrid from "components/Courses/CoursesDataGrid";
 import { useSelector } from "react-redux";
 
 function Courses() {
@@ -17,13 +18,11 @@ function Courses() {
         Courses
       </Typography>
       <Divider variant="middle" sx={{ mb: 1 }} />
-      <CoursesCardsWithPagination />
-
-      {/* {user.userRole === "student" ? (
+      {user.userRole === "student" ? (
         <CoursesCardsWithPagination />
       ) : (
         <CoursesDataGrid />
-      )} */}
+      )}
     </>
   );
 }
