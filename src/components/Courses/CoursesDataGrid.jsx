@@ -3,12 +3,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function CoursesDataGrid() {
   const navigate = useNavigate();
-  const user = useSelector((state) => state?.auth);
   const loading = false;
   const totalPages = 1;
   const courses = [
