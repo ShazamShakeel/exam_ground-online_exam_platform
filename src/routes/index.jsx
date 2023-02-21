@@ -1,3 +1,4 @@
+import ResultCard from "components/Results/ResultCard";
 import Layout from "layout/Layout";
 import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
@@ -8,6 +9,7 @@ import DateSheets from "pages/DateSheets";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import RegisterFace from "pages/RegisterFace";
+import Results from "pages/Results";
 import Settings from "pages/Settings";
 import Signup from "pages/Signup";
 import SignupVerification from "pages/SignupVerification";
@@ -28,6 +30,12 @@ const routes = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index path="dashboard" element={<Dashboard />} />
+
+          <Route path="results">
+            <Route index element={<Results />} />
+            <Route path=":id" element={<ResultCard />} />
+          </Route>
+
           <Route path="datesheets">
             <Route index element={<DateSheets />} />
             <Route element={<TeacherRoute />}>
@@ -35,9 +43,11 @@ const routes = createBrowserRouter(
               <Route path="edit/:id" element={<DateSheetForm />} />
             </Route>
           </Route>
+
           <Route element={<TeacherRoute />}>
             <Route index path="students" element={<Students />} />
           </Route>
+
           <Route path="announcements">
             <Route index element={<Announcements />} />
             <Route element={<TeacherRoute />}>
@@ -45,13 +55,17 @@ const routes = createBrowserRouter(
               <Route path="edit/:id" element={<AnnouncementForm />} />
             </Route>
           </Route>
+
           <Route path="settings" element={<Settings />} />
         </Route>
+
         <Route path="register-face" element={<RegisterFace />} />
       </Route>
+
       <Route element={<VerificationRoute />}>
         <Route index path="verification" element={<SignupVerification />} />
       </Route>
+
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
       <Route path="*" element={<NotFound />} />
