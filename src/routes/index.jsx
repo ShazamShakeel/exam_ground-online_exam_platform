@@ -3,6 +3,9 @@ import Layout from "layout/Layout";
 import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
 import Announcements from "pages/Announcements";
+import Course from "pages/Course";
+import CourseForm from "pages/CourseForm";
+import Courses from "pages/Courses";
 import Dashboard from "pages/Dashboard";
 import DateSheetForm from "pages/DateSheetForm";
 import DateSheets from "pages/DateSheets";
@@ -30,6 +33,15 @@ const routes = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index path="dashboard" element={<Dashboard />} />
+
+          <Route path="courses">
+            <Route index element={<Courses />} />
+            <Route path=":id" element={<Course />} />
+            <Route element={<TeacherRoute />}>
+              <Route path="create" element={<CourseForm />} />
+              <Route path="edit/:id" element={<CourseForm />} />
+            </Route>
+          </Route>
 
           <Route path="results">
             <Route index element={<Results />} />
