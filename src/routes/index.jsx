@@ -9,12 +9,14 @@ import RegisterFace from "pages/RegisterFace";
 import Settings from "pages/Settings";
 import Signup from "pages/Signup";
 import SignupVerification from "pages/SignupVerification";
+import Students from "pages/Students";
 import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import TeacherRoute from "./TeacherRoute";
 import VerificationRoute from "./VerificationRoute";
 
 const routes = createBrowserRouter(
@@ -24,10 +26,15 @@ const routes = createBrowserRouter(
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index path="dashboard" element={<Dashboard />} />
+          <Route element={<TeacherRoute />}>
+            <Route index path="students" element={<Students />} />
+          </Route>
           <Route path="announcements">
             <Route index element={<Announcements />} />
-            <Route path="create" element={<AnnouncementForm />} />
-            <Route path="edit/:id" element={<AnnouncementForm />} />
+            <Route element={<TeacherRoute />}>
+              <Route path="create" element={<AnnouncementForm />} />
+              <Route path="edit/:id" element={<AnnouncementForm />} />
+            </Route>
           </Route>
           <Route path="settings" element={<Settings />} />
         </Route>

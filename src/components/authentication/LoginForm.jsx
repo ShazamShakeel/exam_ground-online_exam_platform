@@ -59,7 +59,7 @@ export default function LoginForm() {
         email: "teacher@university.edu.pk",
         name: "Teacher",
         userId: "123456",
-        userRole: "teacher",
+        userRole: "student",
         university: "University",
         isVerified: true,
       })
