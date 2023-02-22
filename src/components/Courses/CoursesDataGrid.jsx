@@ -1,7 +1,8 @@
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import PreviewIcon from "@mui/icons-material/Preview";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { Button, IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
 import { useNavigate } from "react-router-dom";
 
@@ -177,7 +178,7 @@ export default function CoursesDataGrid() {
           <IconButton
             variant="contained"
             size="small"
-            onClick={() => navigate(`/exams/checked/edit/${params?.row?.id}`)}
+            onClick={() => navigate(`edit/${params?.row?.id}`)}
           >
             <EditIcon />
           </IconButton>
@@ -197,12 +198,23 @@ export default function CoursesDataGrid() {
   ];
 
   return (
-    <CustomDataGrid
-      loading={loading}
-      rows={courses}
-      columns={columns}
-      totalPages={totalPages}
-      handlePagination={handlePagination}
-    />
+    <>
+      <Stack direction="row" my={2}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("create")}
+        >
+          Add New Course
+        </Button>
+      </Stack>
+      <CustomDataGrid
+        loading={loading}
+        rows={courses}
+        columns={columns}
+        totalPages={totalPages}
+        handlePagination={handlePagination}
+      />
+    </>
   );
 }

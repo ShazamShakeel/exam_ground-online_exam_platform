@@ -1,7 +1,9 @@
 import { Box, Card, Divider, Stack, Typography } from "@mui/material";
 import Carousel from "react-multi-carousel";
+import { useNavigate } from "react-router-dom";
 
 export default function Courses() {
+  const navigate = useNavigate();
   const courses = [
     {
       id: 1,
@@ -146,7 +148,9 @@ export default function Courses() {
                 width: { lg: "300px", xl: "300px" },
                 p: 2,
                 m: 1,
+                cursor: "pointer",
               }}
+              onClick={() => navigate(`/courses/${course?.id}`)}
             >
               <Stack direction="column" gap={1}>
                 <Typography
