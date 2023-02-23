@@ -1,7 +1,10 @@
 import { Box, Button, Divider, Grid, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export default function HeroSection() {
+  const isLoggedIn = useSelector((state) => state.auth?.isLoggedIn);
+
   return (
     <Box component="main" height={{ xs: "auto", md: "calc(100vh - 60px)" }}>
       <Grid container height="100%" py={{ xs: 2, md: 0 }}>
@@ -35,12 +38,12 @@ export default function HeroSection() {
             variant="contained"
             color="primary"
             size="large"
-            to="/signup"
+            to={isLoggedIn ? "/dashboard" : "/signup"}
             sx={{
               maxWidth: { xs: "150px", md: "200px" },
             }}
           >
-            Get started for free
+            {isLoggedIn ? "Go to Dashboard" : "Get started for free"}
           </Button>
         </Grid>
         <Grid

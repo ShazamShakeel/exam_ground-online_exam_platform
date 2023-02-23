@@ -1,4 +1,6 @@
 import ResultCard from "components/Results/ResultCard";
+import CreateMcqExam from "components/TeacherExams/CreateMcqExam";
+import CreateSubjectiveExam from "components/TeacherExams/CreateSubjectiveExam";
 import Layout from "layout/Layout";
 import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
@@ -9,6 +11,7 @@ import Courses from "pages/Courses";
 import Dashboard from "pages/Dashboard";
 import DateSheetForm from "pages/DateSheetForm";
 import DateSheets from "pages/DateSheets";
+import Exams from "pages/Exams";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import RegisterFace from "pages/RegisterFace";
@@ -40,6 +43,17 @@ const routes = createBrowserRouter(
             <Route element={<TeacherRoute />}>
               <Route path="create" element={<CourseForm />} />
               <Route path="edit/:id" element={<CourseForm />} />
+            </Route>
+          </Route>
+
+          <Route path="exams">
+            <Route index element={<Exams />} />
+            <Route element={<TeacherRoute />}>
+              <Route path="create/mcq-exam" element={<CreateMcqExam />} />
+              <Route
+                path="create/subjective-exam"
+                element={<CreateSubjectiveExam />}
+              />
             </Route>
           </Route>
 
