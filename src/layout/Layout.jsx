@@ -237,7 +237,7 @@ export default function Layout() {
         <Box>
           <List>
             <ListItem disablePadding>
-              <ListItemButton to="/settings" component={NavLink}>
+              <ListItemButton to="/profile" component={NavLink}>
                 <ListItemIcon
                   sx={{
                     minWidth: "35px",
@@ -249,7 +249,7 @@ export default function Layout() {
                 <ListItemText
                   primary={
                     <Typography variant="h6" fontWeight="bold">
-                      Settings
+                      Profile
                     </Typography>
                   }
                 />

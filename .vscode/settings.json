@@ -17,6 +17,7 @@
     "source.fixAll.eslint": true
   },
   "cSpell.words": [
+    "Autosize",
     "BazaarGhar",
     "commitlint",
     "datesheet",
@@ -30,6 +31,7 @@
     "reduxjs",
     "Roboto",
     "Signup",
+    "tesseract",
     "toastify"
   ]
 }

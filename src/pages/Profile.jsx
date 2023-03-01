@@ -13,7 +13,7 @@ import ProfileAvatarPlaceholder from "assets/images/ProfileAvatarPlaceholder.png
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
-function Settings() {
+function Profile() {
   const profileImageInputRef = useRef();
   const user = useSelector((state) => state.auth);
   const [name, setName] = useState("");
@@ -45,7 +45,7 @@ function Settings() {
           color="primary"
           mb={2}
         >
-          Settings
+          Profile
         </Typography>
         <Divider variant="middle" sx={{ mb: 2 }} />
         <Grid container spacing={2} height="auto" my={2}>
@@ -185,4 +185,4 @@ function Settings() {
   );
 }
 
-export default Settings;
+export default Profile;

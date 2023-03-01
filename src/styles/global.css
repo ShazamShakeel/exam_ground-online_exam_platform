@@ -104,3 +104,8 @@ a {
     width: 45px !important;
   }
 }
+
+.question > p {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
