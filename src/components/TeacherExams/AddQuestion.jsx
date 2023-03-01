@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Checkbox,
   Dialog,
@@ -14,9 +13,14 @@ import {
 import { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 
-export default function AddQuestion({ questionType, handleAddQuestion }) {
+export default function AddQuestion({
+  open,
+  setOpen,
+  editQuestion,
+  handleAddQuestion,
+  handleUpdateQuestion,
+}) {
   const editorRef = useRef(null);
-  const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState([
     { text: "", isCorrect: false },
@@ -54,89 +58,98 @@ export default function AddQuestion({ questionType, handleAddQuestion }) {
     } else {
       setCorrectOptionError("");
     }
-    handleAddQuestion({
-      question,
-      options,
-    });
+    editQuestion
+      ? handleUpdateQuestion({
+          question,
+          options,
+        })
+      : handleAddQuestion({
+          question,
+          options,
+        });
     setOpen(false);
+    setQuestion("");
+    setOptions([
+      { text: "", isCorrect: false },
+      { text: "", isCorrect: false },
+      { text: "", isCorrect: false },
+      { text: "", isCorrect: false },
+    ]);
+    setCorrectOption("");
+    setQuestionInputError("");
+    setCorrectOptionError("");
   };
 
   useEffect(() => {
     setCorrectOption(options.find((option) => option.isCorrect)?.text);
   }, [options]);
 
+  useEffect(() => {
+    if (editQuestion) {
+      setQuestion(editQuestion.question);
+      setOptions(editQuestion.options);
+    }
+  }, [editQuestion]);
+
   return (
-    <>
-      <Box m="auto" maxWidth={300}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpen(true)}
-          fullWidth
-          size="large"
-        >
+    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
+      <form onSubmit={onSubmit}>
+        <DialogTitle textAlign="center" fontWeight="bold" color="primary">
           Add MCQ
-        </Button>
-      </Box>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
-        <form onSubmit={onSubmit}>
-          <DialogTitle textAlign="center" fontWeight="bold" color="primary">
-            Add MCQ
-          </DialogTitle>
-          <DialogContent>
-            <Stack direction="column" gap={1}>
-              <Typography variant="h6" component="h2" fontWeight="bold">
-                Question:
-              </Typography>
-              <ReactQuill
-                theme="snow"
-                ref={editorRef}
-                value={question}
-                onChange={setQuestion}
-                placeholder="Write your question here..."
-              />
-              {questionInputError && (
-                <Typography color="error">{questionInputError}</Typography>
-              )}
-              <Typography variant="h6" component="h2" fontWeight="bold">
-                Options:
-              </Typography>
-              {options.map((_, index) => (
-                <Stack direction="row" alignItems="center" gap={1} key={index}>
-                  <Typography variant="body1">{`${index + 1})`}</Typography>
-                  <TextField
-                    fullWidth
-                    required
-                    multiline
-                    value={options[index]?.text}
-                    onChange={(e) => handleOptionChange(index, e)}
-                  />
-                  <FormControlLabel
-                    control={<Checkbox />}
-                    label="Correct"
-                    checked={options[index].isCorrect}
-                    onChange={() => handleCheckboxChange(index)}
-                  />
-                </Stack>
-              ))}
-              <Stack direction="row" alignItems="center" gap={1} mt={1}>
-                <Typography variant="h6" fontWeight="bold">
-                  Correct Option:
-                </Typography>
-                <Typography variant="h6">{correctOption}</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ width: 800 }}>
+          <Stack direction="column" gap={1}>
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Question:
+            </Typography>
+            <ReactQuill
+              theme="snow"
+              ref={editorRef}
+              value={question}
+              onChange={setQuestion}
+              placeholder="Write your question here..."
+            />
+            {questionInputError && (
+              <Typography color="error">{questionInputError}</Typography>
+            )}
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Options:
+            </Typography>
+            {options.map((_, index) => (
+              <Stack direction="row" alignItems="center" gap={1} key={index}>
+                <Typography variant="body1">{`${index + 1})`}</Typography>
+                <TextField
+                  fullWidth
+                  required
+                  multiline
+                  value={options[index]?.text}
+                  onChange={(e) => handleOptionChange(index, e)}
+                />
+                <FormControlLabel
+                  control={<Checkbox />}
+                  label="Correct"
+                  checked={options[index].isCorrect}
+                  onChange={() => handleCheckboxChange(index)}
+                />
               </Stack>
-              {correctOptionError && (
-                <Typography color="error">{correctOptionError}</Typography>
-              )}
+            ))}
+            <Stack direction="row" alignItems="center" gap={1} mt={1}>
+              <Typography variant="h6" fontWeight="bold">
+                Correct Option:
+              </Typography>
+              <Typography variant="h6">{correctOption}</Typography>
             </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="contained" color="primary" type="submit" fullWidth>
-              Add
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </>
+            {correctOptionError && (
+              <Typography color="error">{correctOptionError}</Typography>
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" type="submit" fullWidth>
+            Add
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }

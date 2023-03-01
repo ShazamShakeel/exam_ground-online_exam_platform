@@ -144,6 +144,7 @@ function CourseForm() {
                   size="small"
                   error={!!errors.courseCode}
                   helperText={errors?.courseCode?.message}
+                  sx={{ bgcolor: "white" }}
                   {...field}
                 />
               )}
@@ -164,6 +165,7 @@ function CourseForm() {
                   fullWidth
                   error={!!errors.courseName}
                   helperText={errors?.courseName?.message}
+                  sx={{ bgcolor: "white" }}
                   {...field}
                 />
               )}
@@ -187,6 +189,7 @@ function CourseForm() {
                   placeholder="Write announcement description here"
                   error={!!errors.description}
                   helperText={errors?.description?.message}
+                  sx={{ bgcolor: "white" }}
                   {...field}
                 />
               )}
@@ -201,6 +204,7 @@ function CourseForm() {
                 size="small"
                 fullWidth
                 value={`https://examground.com/course/join/MTUxMjY2NjU2NzUz`}
+                sx={{ bgcolor: "white" }}
               />
             </Stack>
           )}
@@ -227,7 +231,7 @@ function CourseForm() {
               placeholder="Enter student email to add"
               value={studentEmail}
               onChange={(e) => setStudentEmail(e.target.value)}
-              sx={{ minWidth: 180 }}
+              sx={{ minWidth: 180, bgcolor: "white" }}
             />
             <Button variant="contained" color="primary" disableElevation>
               Add Student

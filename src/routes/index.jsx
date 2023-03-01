@@ -14,9 +14,9 @@ import DateSheets from "pages/DateSheets";
 import Exams from "pages/Exams";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
+import Profile from "pages/Profile";
 import RegisterFace from "pages/RegisterFace";
 import Results from "pages/Results";
-import Settings from "pages/Settings";
 import Signup from "pages/Signup";
 import SignupVerification from "pages/SignupVerification";
 import Students from "pages/Students";
@@ -82,7 +82,7 @@ const routes = createBrowserRouter(
             </Route>
           </Route>
 
-          <Route path="settings" element={<Settings />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="register-face" element={<RegisterFace />} />
