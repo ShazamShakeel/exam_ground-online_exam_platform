@@ -83,11 +83,11 @@ export default function SignUpForm() {
       userSignup({
         token: "token",
         id: "123456",
-        email: "teacher@university.edu.pk",
-        name: "Teacher",
-        userId: "123456",
-        userRole: "teacher",
-        university: "University",
+        email: data?.email ?? "",
+        name: data?.firstName + " " + data?.lastName ?? "",
+        userId: data?.employeeId ?? data?.studentId ?? "",
+        userRole: data?.employeeId ? "teacher" : "student",
+        university: data?.university ?? "",
         isVerified: false,
       })
     );
@@ -264,7 +264,6 @@ export default function SignUpForm() {
                     type="password"
                     size="small"
                     fullWidth
-                    autoFocus
                     error={!!errors.password}
                     helperText={errors?.password?.message}
                     {...field}
@@ -281,7 +280,6 @@ export default function SignUpForm() {
                     type="password"
                     size="small"
                     fullWidth
-                    autoFocus
                     error={!!errors.confirmPassword}
                     helperText={errors?.confirmPassword?.message}
                     {...field}

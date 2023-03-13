@@ -91,7 +91,6 @@ function DateSheetForm() {
           }}
         >
           <form onSubmit={handleSubmit(onSubmit)}>
-            {console.log({ errors })}
             <Stack direction="column" gap={2}>
               <Box>
                 <Typography variant="h6" color="primary" mb={1}>

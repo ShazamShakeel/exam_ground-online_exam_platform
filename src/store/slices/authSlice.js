@@ -140,6 +140,7 @@ const authSlice = createSlice({
       localStorage.setItem("isVerified", action?.payload?.isVerified);
     },
     userEmailVerification: (state, action) => {
+      localStorage.setItem("isVerified", action.payload.isVerified);
       state.isVerified = action.payload.isVerified;
     },
     logout: (state) => {

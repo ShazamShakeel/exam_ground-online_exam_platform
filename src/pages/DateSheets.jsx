@@ -160,15 +160,17 @@ function DateSheets() {
         DateSheets
       </Typography>
       <Divider variant="middle" sx={{ mb: 1 }} />
-      <Stack direction="row" my={2}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate("create")}
-        >
-          Add New Date Sheet
-        </Button>
-      </Stack>
+      {user.userRole === "teacher" && (
+        <Stack direction="row" my={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("create")}
+          >
+            Add New Date Sheet
+          </Button>
+        </Stack>
+      )}
       <CustomDataGrid
         loading={loading}
         rows={datesheets}
