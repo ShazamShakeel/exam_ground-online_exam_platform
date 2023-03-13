@@ -1,6 +1,5 @@
 import ResultCard from "components/Results/ResultCard";
-import CreateMcqExam from "components/TeacherExams/CreateMcqExam";
-import CreateSubjectiveExam from "components/TeacherExams/CreateSubjectiveExam";
+import ExamForm from "components/TeacherExams/ExamForm";
 import Layout from "layout/Layout";
 import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
@@ -49,11 +48,8 @@ const routes = createBrowserRouter(
           <Route path="exams">
             <Route index element={<Exams />} />
             <Route element={<TeacherRoute />}>
-              <Route path="create/mcq-exam" element={<CreateMcqExam />} />
-              <Route
-                path="create/subjective-exam"
-                element={<CreateSubjectiveExam />}
-              />
+              <Route path="create/mcq-exam" element={<ExamForm />} />
+              <Route path="create/subjective-exam" element={<ExamForm />} />
             </Route>
           </Route>
 

@@ -1,5 +1,4 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { Divider, IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
@@ -192,15 +191,6 @@ function Results() {
       flex: 0.25,
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
-          {user.userRole === "teacher" && (
-            <IconButton
-              variant="contained"
-              size="small"
-              onClick={() => navigate(`/exams/checked/edit/${params?.row?.id}`)}
-            >
-              <EditIcon />
-            </IconButton>
-          )}
           <IconButton
             variant="contained"
             size="small"

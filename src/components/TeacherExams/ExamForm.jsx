@@ -10,10 +10,14 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
+import { useLocation } from "react-router-dom";
 import AddQuestion from "./AddQuestion";
 import UseOCR from "./UseOCR";
 
-export default function CreateMcqExam() {
+export default function ExamForm() {
+  const examType = useLocation().pathname.split("/").includes("mcq-exam")
+    ? "mcq"
+    : "subjective";
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([]);
@@ -22,6 +26,7 @@ export default function CreateMcqExam() {
   const [duration, setDuration] = useState(0);
   const [browserSecurity, setBrowserSecurity] = useState(false);
   const [eachMcqMarks, setEachMcqMarks] = useState(0);
+  const [totalMarks, setTotalMarks] = useState(0);
 
   const handleAddQuestion = (question) => {
     setQuestions((prevQuestions) => [...prevQuestions, question]);
@@ -42,6 +47,17 @@ export default function CreateMcqExam() {
       setEditQuestionIndex("");
       setEditQuestion(null);
       return newQuestions;
+    });
+  };
+
+  const handleSubmit = () => {
+    console.log("submit", {
+      title,
+      duration,
+      browserSecurity,
+      questions,
+      type: examType === "mcq" ? "mcq" : "subjective",
+      ...(examType === "mcq" ? eachMcqMarks : totalMarks),
     });
   };
 
@@ -83,28 +99,53 @@ export default function CreateMcqExam() {
             }}
           />
         </Stack>
-        <Stack direction="row" alignItems="center" gap={2}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            color="primary"
-            minWidth={200}
-          >
-            Each MCQ Marks:
-          </Typography>
-          <TextField
-            variant="outlined"
-            value={eachMcqMarks}
-            onChange={(e) => setEachMcqMarks(e.target.value)}
-            placeholder="Enter each MCQ marks"
-            size="small"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                bgcolor: "white",
-              },
-            }}
-          />
-        </Stack>
+        {examType === "mcq" ? (
+          <Stack direction="row" alignItems="center" gap={2}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color="primary"
+              minWidth={200}
+            >
+              Each MCQ Marks:
+            </Typography>
+            <TextField
+              variant="outlined"
+              value={eachMcqMarks}
+              onChange={(e) => setEachMcqMarks(e.target.value)}
+              placeholder="Enter each MCQ marks"
+              size="small"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  bgcolor: "white",
+                },
+              }}
+            />
+          </Stack>
+        ) : (
+          <Stack direction="row" alignItems="center" gap={2}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color="primary"
+              minWidth={200}
+            >
+              Total Marks:
+            </Typography>
+            <TextField
+              variant="outlined"
+              value={eachMcqMarks}
+              onChange={(e) => setTotalMarks(e.target.value)}
+              placeholder="Enter each MCQ marks"
+              size="small"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  bgcolor: "white",
+                },
+              }}
+            />
+          </Stack>
+        )}
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography
             variant="h5"
@@ -149,7 +190,7 @@ export default function CreateMcqExam() {
       </Stack>
       <Divider variant="middle" sx={{ my: 1 }} />
 
-      <Stack direction="column" my={2} minHeight={300}>
+      <Stack direction="column" my={2}>
         <Box maxWidth={200}>
           <Button
             variant="contained"
@@ -158,7 +199,7 @@ export default function CreateMcqExam() {
             fullWidth
             size="large"
           >
-            Add MCQ
+            Add Question
           </Button>
         </Box>
         <AddQuestion
@@ -181,31 +222,35 @@ export default function CreateMcqExam() {
                 {ReactHtmlParser(question.question)}
               </Box>
             </Stack>
-            <Stack direction="column" gap={1}>
-              <Typography variant="h6" fontWeight="bold" color="primary">
-                Options:
-              </Typography>
-              {question.options.map((option, index) => (
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  gap={1}
-                  key={index}
-                  sx={{ pl: 2 }}
-                >
-                  <Typography variant="body1">{`${index + 1})`}</Typography>
-                  <Typography variant="body1">{option.text}</Typography>
+            {examType === "mcq" && (
+              <>
+                <Stack direction="column" gap={1}>
+                  <Typography variant="h6" fontWeight="bold" color="primary">
+                    Options:
+                  </Typography>
+                  {question.options.map((option, index) => (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      gap={1}
+                      key={index}
+                      sx={{ pl: 2 }}
+                    >
+                      <Typography variant="body1">{`${index + 1})`}</Typography>
+                      <Typography variant="body1">{option.text}</Typography>
+                    </Stack>
+                  ))}
                 </Stack>
-              ))}
-            </Stack>
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Typography variant="h6" fontWeight="bold" color="primary">
-                Correct Option:
-              </Typography>
-              <Typography variant="body1">
-                {question.options.find((option) => option.isCorrect)?.text}
-              </Typography>
-            </Stack>
+                <Stack direction="row" alignItems="center" gap={2}>
+                  <Typography variant="h6" fontWeight="bold" color="primary">
+                    Correct Option:
+                  </Typography>
+                  <Typography variant="body1">
+                    {question.options.find((option) => option.isCorrect)?.text}
+                  </Typography>
+                </Stack>
+              </>
+            )}
             <Stack direction="row" justifyContent="flex-end" gap={2}>
               <Button
                 variant="contained"
@@ -231,7 +276,12 @@ export default function CreateMcqExam() {
       </Stack>
       <Divider variant="middle" sx={{ my: 1 }} />
       <Box display="flex" justifyContent="center">
-        <Button variant="contained" color="primary" size="large">
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleSubmit}
+        >
           Create Exam
         </Button>
       </Box>

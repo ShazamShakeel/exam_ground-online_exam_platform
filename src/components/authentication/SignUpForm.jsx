@@ -264,7 +264,6 @@ export default function SignUpForm() {
                     type="password"
                     size="small"
                     fullWidth
-                    autoFocus
                     error={!!errors.password}
                     helperText={errors?.password?.message}
                     {...field}
@@ -281,7 +280,6 @@ export default function SignUpForm() {
                     type="password"
                     size="small"
                     fullWidth
-                    autoFocus
                     error={!!errors.confirmPassword}
                     helperText={errors?.confirmPassword?.message}
                     {...field}
