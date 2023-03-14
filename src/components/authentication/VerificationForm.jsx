@@ -63,6 +63,7 @@ export default function VerificationForm() {
               fontWeight: "bold",
               textTransform: "none",
             }}
+            onClick={() => {}}
           >
             Resend Code
           </Button>

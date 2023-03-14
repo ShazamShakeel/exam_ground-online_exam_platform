@@ -14,15 +14,16 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { userSignup } from "store/slices/authSlice";
+import { signup } from "store/slices/authSlice";
 import * as Yup from "yup";
 
 export default function SignUpForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const loading = useSelector((state) => state?.auth?.loading);
   const [selectedTab, setSelectedTab] = useState("teacher");
 
   const validationSchema = Yup.object().shape({
@@ -78,20 +79,20 @@ export default function SignUpForm() {
   });
 
   const onSubmit = (data) => {
-    console.log("onSubmit", data);
     dispatch(
-      userSignup({
-        token: "token",
-        id: "123456",
+      signup({
         email: data?.email ?? "",
         name: data?.firstName + " " + data?.lastName ?? "",
-        userId: data?.employeeId ?? data?.studentId ?? "",
-        userRole: data?.employeeId ? "teacher" : "student",
+        universityId: data?.employeeId ?? data?.studentId ?? "",
+        role: selectedTab === "teacher" ? "teacher" : "student",
         university: data?.university ?? "",
-        isVerified: false,
+        password: data?.password ?? "",
       })
-    );
-    navigate("/verification");
+    )
+      .unwrap()
+      .then(() => {
+        navigate("/verification");
+      });
   };
 
   const handleTabChange = (_, newValue) => {
@@ -292,8 +293,9 @@ export default function SignUpForm() {
                 color="primary"
                 fullWidth
                 sx={{ fontWeight: "bold" }}
+                disabled={loading}
               >
-                Sign up
+                {loading ? "Signing Up" : "Sign up"}
               </Button>
             </Stack>
           </form>

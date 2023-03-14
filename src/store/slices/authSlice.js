@@ -1,22 +1,43 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
+
+export const signup = createAsyncThunk(
+  "auth/signup",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `${process.env.REACT_APP_BASE_URL}/auth/register`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);
 
 export const login = createAsyncThunk(
   "auth/login",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/login`,
+      const response = await axiosInstance.post(
+        `${process.env.REACT_APP_BASE_URL}/auth/login`,
         data
       );
       return response.data;
     } catch (error) {
-      toast.error(error?.response?.data?.message ?? error.message ?? "");
-      return rejectWithValue(
-        error?.response?.data?.message ?? error.message ?? ""
-      ); // rejectedWithValue is used to return a rejected response with a payload
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
     }
   }
 );
@@ -27,156 +48,175 @@ export const updateProfile = createAsyncThunk(
     try {
       const state = getState();
       const response = await axiosInstance.patch(
-        `/user/${state?.auth?.id}`,
+        `/users/${state?.auth?.id}/me`,
         data
       );
-      toast.success("Profile updated successfully");
       return response?.data;
     } catch (error) {
-      toast.error(
+      const message =
         error?.response?.data?.message ??
-          error?.message ??
-          "Something went wrong, please try again later"
-      );
-      return rejectWithValue(
-        error?.response?.data?.message ??
-          error?.message ??
-          "Something went wrong, please try again later"
-      );
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
     }
   }
 );
 
-export const updateProfilePassword = createAsyncThunk(
-  "auth/updateProfilePassword",
+export const updateProfileImg = createAsyncThunk(
+  "auth/updateProfileImg",
   async (data, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const response = await axiosInstance.patch(
-        `/user/${state?.auth?.id}`,
+      const response = await axiosInstance.post(
+        `/users/${state?.auth?.id}/me/updateProfileImage`,
         data
       );
-      toast.success("Password has been successfully changed");
+      toast.success("Profile image updated successfully");
       return response?.data;
     } catch (error) {
-      toast.error(
+      const message =
         error?.response?.data?.message ??
-          error?.message ??
-          "Something went wrong, please try again later"
-      );
-      return rejectWithValue(
-        error?.response?.data?.message ??
-          error?.message ??
-          "Something went wrong, please try again later"
-      );
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
     }
   }
 );
 
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async (data, { getState, rejectWithValue }) => {
+    try {
+      const userId = getState()?.auth?.id;
+      const response = await axiosInstance.patch(`/auth/change-password`, {
+        userId,
+        password: data.password,
+      });
+      return response?.data;
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// export const sendEmailVerification = createAsyncThunk(
+//   "auth/sendEmailVerification",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post(
+//         `/auth/send-email-verification`
+//       );
+//       toast.success("Email verification OTP has been sent to your email");
+//       return response?.data;
+//     } catch (error) {
+//       const message =
+//         error?.response?.data?.message ??
+//         error?.message ??
+//         "Something went wrong, please try again later";
+//       toast.error(message);
+//       return rejectWithValue(message);
+//     }
+//   }
+// );
+
+// export const verifyEmail = createAsyncThunk(
+//   "auth/verifyEmail",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post(`/auth/verify-email`, data);
+//       toast.success("Email has been successfully verified");
+//       return response?.data;
+//     } catch (error) {
+//       const message =
+//         error?.response?.data?.message ??
+//         error?.message ??
+//         "Something went wrong, please try again later";
+//       toast.error(message);
+//       return rejectWithValue(message);
+//     }
+//   }
+// );
+
+const setAuthState = (state, action) => {
+  state.token = action?.payload?.tokens?.access?.token;
+  state.id = action?.payload?.user?.id;
+  state.universityId = action?.payload?.user?.universityId;
+  state.name = action?.payload?.user?.name;
+  state.email = action?.payload?.user?.email;
+  state.university = action?.payload?.user?.university;
+  state.userRole = action?.payload?.user?.role;
+  state.isVerified = action?.payload?.user?.isEmailVerified;
+  state.profileImg = action?.payload?.user?.profileImg;
+  state.facialId = action?.payload?.user?.facialId ?? "";
+  state.isLoggedIn = true;
+  state.loading = false;
+  state.error = "";
+  localStorage?.setItem("id", action?.payload?.user?.id);
+  localStorage.setItem("token", action?.payload?.tokens?.access?.token);
+  localStorage.setItem("userRole", action?.payload?.user?.role);
+  localStorage.setItem("isVerified", action?.payload?.user?.isEmailVerified);
+};
+
+const initialState = {
+  id: "",
+  token: "",
+  facialId: "",
+  universityId: "",
+  name: "",
+  email: "",
+  university: "",
+  userRole: "",
+  isVerified: false,
+  profileImg: "",
+  isLoggedIn: false,
+  loading: false,
+  error: "",
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    id: "",
-    token: "",
-    faceId: "",
-    userId: "",
-    name: "",
-    email: "",
-    university: "",
-    userRole: "",
-    isVerified: false,
-    isLoggedIn: false,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
-    // Actions
-    resetState: (state) => {
-      state.id = "";
-      state.token = "";
-      state.faceId = "";
-      state.userId = "";
-      state.name = "";
-      state.email = "";
-      state.university = "";
-      state.userRole = "";
-      state.isVerified = false;
-      state.isLoggedIn = false;
-      state.loading = false;
-      state.error = null;
-    },
-    userLogin: (state, action) => {
-      state.id = action?.payload?.id;
-      state.token = action?.payload?.token;
-      state.userId = action?.payload?.userId;
-      state.name = action?.payload?.name;
-      state.email = action?.payload?.email;
-      state.university = action?.payload?.university;
-      state.userRole = action?.payload?.userRole;
-      state.isVerified = action?.payload?.isVerified;
-      state.isLoggedIn = true;
-      state.error = null;
-      toast.success("You have been successfully logged in");
-      localStorage?.setItem("id", action?.payload?.id);
-      localStorage.setItem("token", action?.payload?.token);
-      localStorage.setItem("userRole", action?.payload?.userRole);
-      localStorage.setItem("isVerified", action?.payload?.isVerified);
-    },
-    userSignup: (state, action) => {
-      state.id = action?.payload?.id;
-      state.token = action?.payload?.token;
-      state.userId = action?.payload?.userId;
-      state.name = action?.payload?.name;
-      state.email = action?.payload?.email;
-      state.university = action?.payload?.university;
-      state.userRole = action?.payload?.userRole;
-      state.isVerified = false;
-      state.isLoggedIn = true;
-      state.error = null;
-      toast.success("You have been successfully registered");
-      localStorage?.setItem("id", action?.payload?.id);
-      localStorage.setItem("token", action?.payload?.token);
-      localStorage.setItem("userRole", action?.payload?.userRole);
-      localStorage.setItem("isVerified", action?.payload?.isVerified);
-    },
+    resetState: () => initialState,
     userEmailVerification: (state, action) => {
+      toast.success("Email has been successfully verified");
       localStorage.setItem("isVerified", action.payload.isVerified);
       state.isVerified = action.payload.isVerified;
     },
-    logout: (state) => {
-      state.id = "";
-      state.token = "";
-      state.userId = "";
-      state.name = "";
-      state.email = "";
-      state.university = "";
-      state.userRole = "";
-      state.isVerified = false;
-      state.isLoggedIn = false;
-      state.loading = false;
-      state.error = null;
-      toast.success("You have been logged out");
+    logout: () => {
       localStorage.clear();
+      toast.success("You have been logged out");
+      return initialState;
     },
   },
   extraReducers: (builder) => {
-    //.addCase(Function_Name.PromiseState, (state, action))=> { state logic here })
     builder
+      .addCase(signup.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(signup.fulfilled, (state, action) => {
+        setAuthState(state, action);
+        toast.success("You have been successfully registered");
+      })
+      .addCase(signup.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload;
+      })
       .addCase(login.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.error = "";
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.id = action?.payload?.id;
-        state.token = action?.payload?.token;
-        state.userId = action?.payload?.userId;
-        state.name = action?.payload?.name;
-        state.email = action?.payload?.email;
-        state.university = action?.payload?.university;
-        state.userRole = action?.payload?.userRole;
-        state.isVerified = action?.payload?.isVerified;
-        state.isLoggedIn = true;
-        state.error = null;
+        setAuthState(state, action);
+        toast.success("You have been successfully logged in");
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -187,45 +227,68 @@ const authSlice = createSlice({
         state.error = "";
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.id = action?.payload?.id;
-        state.token = action?.payload?.token;
-        state.userId = action?.payload?.userId;
         state.name = action?.payload?.name;
-        state.email = action?.payload?.email;
-        state.university = action?.payload?.university;
-        state.userRole = action?.payload?.userRole;
-        state.isVerified = action?.payload?.isVerified;
-        state.isLoggedIn = true;
-        state.error = null;
+        state.facialId = action?.payload?.facialId ?? "";
+        state.loading = false;
+        state.error = "";
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(updateProfilePassword.pending, (state) => {
+      .addCase(updatePassword.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.error = "";
       })
-      .addCase(updateProfilePassword.fulfilled, (state) => {
+      .addCase(updatePassword.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = null;
+        state.error = "";
       })
-      .addCase(updateProfilePassword.rejected, (state, action) => {
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateProfileImg.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(updateProfileImg.fulfilled, (state, action) => {
+        state.profileImg = action?.payload?.profileImg;
+        state.loading = false;
+        state.error = "";
+      })
+      .addCase(updateProfileImg.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
+    // .addCase(sendEmailVerification.pending, (state) => {
+    //   state.loading = true;
+    //   state.error = "";
+    // })
+    // .addCase(sendEmailVerification.fulfilled, (state, action) => {
+    //   setAuthState(state, action);
+    // })
+    // .addCase(sendEmailVerification.rejected, (state, action) => {
+    //   state.loading = false;
+    //   state.error = action.payload;
+    // })
+    // .addCase(verifyEmail.pending, (state) => {
+    //   state.loading = true;
+    //   state.error = "";
+    // })
+    // .addCase(verifyEmail.fulfilled, (state, action) => {
+    //   setAuthState(state, action);
+    // })
+    // .addCase(verifyEmail.rejected, (state, action) => {
+    //   state.loading = false;
+    //   state.error = action.payload;
+    // });
   },
 });
 
 // Action creators generated for each case reducer function
-export const {
-  resetState,
-  logout,
-  userLogin,
-  userSignup,
-  userEmailVerification,
-} = authSlice.actions;
+export const { resetState, logout, userLogin, userEmailVerification } =
+  authSlice.actions;
 
 // Exporting default reducer
 export default authSlice.reducer;

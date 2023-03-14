@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { userLogin } from "store/slices/authSlice";
+import { login } from "store/slices/authSlice";
 import * as Yup from "yup";
 
 export default function LoginForm() {
@@ -23,6 +23,8 @@ export default function LoginForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const loading = useSelector((state) => state.auth.loading);
+  const error = useSelector((state) => state.auth.error);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -51,28 +53,18 @@ export default function LoginForm() {
   });
 
   const onSubmit = (data) => {
-    console.log({ data });
-    dispatch(
-      userLogin({
-        token: "token",
-        id: "123456",
-        email: "teacher@university.edu.pk",
-        name: "Teacher",
-        userId: "123456",
-        userRole: "student",
-        university: "University",
-        isVerified: true,
-      })
-    );
-    navigate("/dashboard");
+    dispatch(login({ ...data }))
+      .unwrap()
+      .then(() => navigate("/dashboard"));
   };
 
   const handleLoginWithFaceId = () => {
     faceio.current
       .authenticate()
       .then((res) => {
-        console.log(res);
-        navigate("/dashboard");
+        dispatch(login({ facialId: res.facialId }))
+          .unwrap()
+          .then(() => navigate("/dashboard"));
       })
       .catch((err) => console.error(err));
   };
@@ -80,6 +72,9 @@ export default function LoginForm() {
   useEffect(() => {
     // eslint-disable-next-line no-undef
     faceio.current = new faceIO(process.env.REACT_APP_FACEIO_PUBLIC_KEY);
+    return () => {
+      faceio.current = null;
+    };
   }, []);
 
   return (
@@ -131,7 +126,7 @@ export default function LoginForm() {
             Login
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack direction="column" gap={3}>
+            <Stack direction="column" alignItems="center" gap={3}>
               <Controller
                 name="email"
                 control={control}
@@ -165,11 +160,16 @@ export default function LoginForm() {
                   />
                 )}
               />
-              <Link to="/forgot-password">
+              {/* <Link to="/forgot-password">
                 <Typography variant="body2" textAlign="right" color="primary">
                   Forgot password?
                 </Typography>
-              </Link>
+              </Link> */}
+              {error && (
+                <Typography variant="body2" color="error">
+                  {error}
+                </Typography>
+              )}
               <Button
                 type="submit"
                 variant="contained"
