@@ -20,7 +20,9 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { logout } from "store/slices/authSlice";
 import StudentSidebarListItems from "utils/constants/StudentSidebarListItems";
 import TeacherSidebarListItems from "utils/constants/TeacherSidebarListItems";
 
@@ -78,8 +80,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function Layout() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(true);
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const profileImg = useSelector((state) => state.auth.profileImg);
   const [listItems] = useState(
     localStorage.getItem("userRole") === "teacher"
       ? TeacherSidebarListItems
@@ -132,11 +136,7 @@ export default function Layout() {
                   margin: "0 12px 0 12px",
                 }}
               >
-                <Avatar
-                  alt="Demo"
-                  src="/static/images/avatar/1.jpg"
-                  sizes="small"
-                >
+                <Avatar alt="Demo" src={profileImg} sizes="small">
                   EG
                 </Avatar>
               </Box>
@@ -161,7 +161,14 @@ export default function Layout() {
                   <MenuItem onClick={() => navigate("/profile")}>
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={() => navigate("/")}>Logout</MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(logout());
+                      navigate("/");
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
                 </Select>
               </Box>
             </Box>

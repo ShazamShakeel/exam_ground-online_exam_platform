@@ -8,18 +8,24 @@ import {
 } from "@mui/material";
 import FaceIdLogo from "assets/images/FaceId-Logo.svg";
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { updateProfile } from "store/slices/authSlice";
 
 export default function RegisterFaceContainer() {
   const faceio = useRef(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLarge = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const loading = useSelector((state) => state.auth.loading);
   const email = useSelector((state) => state.auth.email);
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
     faceio.current = new faceIO(process.env.REACT_APP_FACEIO_PUBLIC_KEY);
+    return () => {
+      faceio.current = null;
+    };
   }, []);
 
   const handleRegisterFaceId = () => {
@@ -28,16 +34,17 @@ export default function RegisterFaceContainer() {
         email,
       })
       .then((res) => {
-        console.log(res);
-        navigate("/dashboard");
+        dispatch(updateProfile({ facialId: res.facialId }))
+          .unwrap()
+          .then(() => navigate("/dashboard"));
       })
       .catch((err) => console.log(err));
   };
 
   const handleSkip = () => {
-    console.log("click");
     navigate("/dashboard");
   };
+
   return (
     <Box height="100%" display="flex" alignItems="center">
       <Container component="main" sx={{ maxWidth: { md: "550px" } }}>
@@ -76,8 +83,9 @@ export default function RegisterFaceContainer() {
               variant="contained"
               onClick={handleRegisterFaceId}
               fullWidth
+              disabled={loading}
             >
-              Register Face ID
+              {`${loading ? "Please Wait" : "Register Face ID"}`}
             </Button>
           </Stack>
         </Paper>

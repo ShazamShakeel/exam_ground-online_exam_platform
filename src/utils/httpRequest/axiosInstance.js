@@ -9,8 +9,6 @@ axiosInstance.interceptors.request.use(
   (req) => {
     if (localStorage.getItem("token")) {
       req.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
-    } else {
-      throw new Error("Token is not available");
     }
     return req;
   },

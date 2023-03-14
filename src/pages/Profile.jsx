@@ -9,29 +9,65 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ProfileAvatarPlaceholder from "assets/images/ProfileAvatarPlaceholder.png";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import {
+  updatePassword,
+  updateProfile,
+  updateProfileImg,
+} from "store/slices/authSlice";
 
 function Profile() {
   const profileImageInputRef = useRef();
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
   const user = useSelector((state) => state.auth);
+  const [nameError, setNameError] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     setName(user?.name);
-    setProfileImage(user?.profileImage ?? "");
   }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submit", { name }, { password });
+
+    if (name.length < 3) {
+      return setNameError("Name must be at least 3 characters long");
+    } else if (name.length > 30) {
+      return setNameError("Name is too long");
+    } else setNameError("");
+    if (password.length > 0 && password.length < 6) {
+      return setPasswordError("Password must be at least 6 characters long");
+    } else if (password.length > 30) {
+      return setPasswordError("Password is too long");
+    } else setPasswordError("");
+
+    if (user.name !== name) {
+      dispatch(updateProfile({ name }))
+        .unwrap()
+        .then(() => toast.success("Profile updated successfully"));
+    }
+    if (password) {
+      dispatch(updatePassword({ password }))
+        .unwrap()
+        .then(() => {
+          toast.success("Password updated successfully");
+        });
+    }
   };
 
   const handleProfileImage = (e) => {
-    console.log(e.target.files[0]);
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+    dispatch(updateProfileImg(formData))
+      .unwrap()
+      .then(() => {
+        toast.success("Profile image updated successfully");
+      });
   };
 
   return (
@@ -58,11 +94,15 @@ function Profile() {
               alignItems="center"
             >
               <img
-                src={profileImage ? profileImage : ProfileAvatarPlaceholder}
+                src={user?.profileImg}
                 alt="profile-cover"
                 height="200px"
                 width="200px"
-                style={{ border: "1px solid grey", borderRadius: "50%" }}
+                style={{
+                  border: "1px solid grey",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
               <Button
                 type="input"
@@ -72,6 +112,7 @@ function Profile() {
                 onClick={() => {
                   profileImageInputRef.current.click();
                 }}
+                disabled={loading}
               >
                 Change Profile Picture
               </Button>
@@ -94,12 +135,32 @@ function Profile() {
                 fontWeight="bold"
                 color="text.secondary"
               >
-                ID
+                University
               </Typography>
               <TextField
                 fullWidth
                 variant="outlined"
-                value={user.userId}
+                value={user.university}
+                size="small"
+                disabled
+                inputProps={{
+                  sx: {
+                    textTransform: "uppercase",
+                  },
+                }}
+              />
+              <Typography
+                variant="h6"
+                component="p"
+                fontWeight="bold"
+                color="text.secondary"
+              >
+                {`${user.userRole === "student" ? "Student" : "Employee"} ID`}
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                value={user.universityId}
                 size="small"
                 disabled
               />
@@ -116,6 +177,8 @@ function Profile() {
                 variant="outlined"
                 value={name}
                 size="small"
+                error={!!nameError}
+                helperText={nameError && nameError}
                 onChange={(e) => setName(e.target.value)}
               />
               <Typography
@@ -124,22 +187,7 @@ function Profile() {
                 fontWeight="bold"
                 color="text.secondary"
               >
-                University
-              </Typography>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={user.university}
-                size="small"
-                disabled
-              />
-              <Typography
-                variant="h6"
-                component="p"
-                fontWeight="bold"
-                color="text.secondary"
-              >
-                email
+                University Email
               </Typography>
               <TextField
                 fullWidth
@@ -163,6 +211,8 @@ function Profile() {
                 value={password}
                 placeholder="*******"
                 size="small"
+                error={!!passwordError}
+                helperText={passwordError && passwordError}
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
@@ -173,8 +223,9 @@ function Profile() {
                   color="primary"
                   onClick={handleSubmit}
                   fullWidth
+                  disabled={loading}
                 >
-                  Update Profile
+                  {`${loading ? "Updating..." : "Update"}`}
                 </Button>
               </Box>
             </Stack>
