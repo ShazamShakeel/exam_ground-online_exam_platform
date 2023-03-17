@@ -228,7 +228,7 @@ export default function ExamForm() {
                   <Typography variant="h6" fontWeight="bold" color="primary">
                     Options:
                   </Typography>
-                  {question.options.map((option, index) => (
+                  {question?.options?.map((option, index) => (
                     <Stack
                       direction="row"
                       alignItems="center"

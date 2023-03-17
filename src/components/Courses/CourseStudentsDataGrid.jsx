@@ -1,21 +1,22 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
+import { memo } from "react";
 
 function CourseStudentsDataGrid({
   loading = false,
   students = [],
-  totalPages = 1,
+  handleRemoveStudent,
 }) {
   const columns = [
     {
-      field: "studentId",
+      field: "id",
       headerName: "Student ID",
       minWidth: 75,
       flex: 0.25,
       renderCell: (params) => (
         <Typography variant="body1" color="text.secondary">
-          {params?.row?.studentId}
+          {params?.row?.universityId}
         </Typography>
       ),
     },
@@ -29,15 +30,28 @@ function CourseStudentsDataGrid({
       ),
     },
     {
+      field: "email",
+      headerName: "Email",
+      minWidth: 150,
+      flex: 1,
+      renderCell: (params) => (
+        <Typography variant="body1">{params?.row?.email}</Typography>
+      ),
+    },
+    {
       field: "actions",
       headerName: "Actions",
       minWidth: 100,
       flex: 0.25,
       align: "center",
       headerAlign: "center",
-      renderCell: () => (
+      renderCell: (params) => (
         <Stack direction="row" spacing={1}>
-          <IconButton variant="contained" size="small">
+          <IconButton
+            variant="contained"
+            size="small"
+            onClick={() => handleRemoveStudent(params.row.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </Stack>
@@ -55,11 +69,11 @@ function CourseStudentsDataGrid({
         loading={loading}
         rows={students}
         columns={columns}
-        totalPages={totalPages}
+        totalPages={0}
         handlePagination={handlePagination}
       />
     </>
   );
 }
 
-export default CourseStudentsDataGrid;
+export default memo(CourseStudentsDataGrid);

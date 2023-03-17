@@ -8,108 +8,108 @@ import {
   Typography,
 } from "@mui/material";
 import CourseStudentsDataGrid from "components/Courses/CourseStudentsDataGrid";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 import * as Yup from "yup";
 
 function CourseForm() {
-  const studentsFileInputRef = useRef();
-  const navigate = useNavigate();
   const id = useParams()?.id;
+  const navigate = useNavigate();
+  const studentsFileInputRef = useRef();
+  const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [allStudents, setAllStudents] = useState([]);
   const [studentEmail, setStudentEmail] = useState("");
-  const loading = false;
-  const course = null;
-  const students = [
-    {
-      id: 1,
-      studentId: "ABC123",
-      name: "John Doe",
-      university: "Example University",
-      coursesEnrolled: 4,
-    },
-    {
-      id: 2,
-      studentId: "DEF456",
-      name: "Jane Smith",
-      university: "Another University",
-      coursesEnrolled: 3,
-    },
-    {
-      id: 3,
-      studentId: "GHI789",
-      name: "Bob Johnson",
-      university: "Yet Another University",
-      coursesEnrolled: 5,
-    },
-    {
-      id: 4,
-      studentId: "JKL012",
-      name: "Samantha Lee",
-      university: "Example University",
-      coursesEnrolled: 2,
-    },
-    {
-      id: 5,
-      studentId: "MNO345",
-      name: "David Garcia",
-      university: "Another University",
-      coursesEnrolled: 6,
-    },
-    {
-      id: 6,
-      studentId: "PQR678",
-      name: "Emily Chen",
-      university: "Yet Another University",
-      coursesEnrolled: 4,
-    },
-    {
-      id: 7,
-      studentId: "STU901",
-      name: "Michael Kim",
-      university: "Example University",
-      coursesEnrolled: 3,
-    },
-    {
-      id: 8,
-      studentId: "VWX234",
-      name: "Lisa Patel",
-      university: "Another University",
-      coursesEnrolled: 7,
-    },
-    {
-      id: 9,
-      studentId: "YZA567",
-      name: "Daniel Rodriguez",
-      university: "Yet Another University",
-      coursesEnrolled: 5,
-    },
-    {
-      id: 10,
-      studentId: "BCD890",
-      name: "Maria Hernandez",
-      university: "Example University",
-      coursesEnrolled: 4,
-    },
-  ];
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      courseCode: course?.courseCode || "",
-      courseName: course?.courseName || "",
-      description: course?.description || "",
+      code: "",
+      title: "",
+      description: "",
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("onSubmit", data);
-    navigate("/courses");
+  const handleAddStudent = () => {
+    const student = allStudents.find((s) => s.email === studentEmail);
+    if (student) {
+      setStudents([...students, student]);
+      setStudentEmail("");
+    } else {
+      toast.error("Student not found");
+    }
   };
+
+  const onSubmit = (data) => {
+    if (!id) {
+      axiosInstance
+        .post("/course", {
+          ...data,
+          students: students.map((student) => student.email),
+        })
+        .then(() => {
+          navigate("/courses");
+        });
+    } else {
+      axiosInstance
+        .patch("/course/" + id, {
+          ...data,
+          students: students.map((student) => student.email),
+        })
+        .then(() => {
+          navigate("/courses");
+        });
+    }
+  };
+
+  useEffect(() => {
+    axiosInstance
+      .get(`/users`, {
+        params: {
+          role: "student",
+          university: "numl",
+        },
+      })
+      .then((res) => {
+        setAllStudents(res.data.results);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      axiosInstance
+        .get(`/course?_id=${id}&populate=students`)
+        .then((res) => {
+          const course = res.data.results[0];
+          reset({
+            code: course?.code || "",
+            title: course?.title || "",
+            description: course?.description || "",
+          });
+          setStudents(course?.students || []);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [id, reset]);
+
+  const handleRemoveStudent = useCallback(
+    (student) => {
+      setStudents(students.filter((s) => s._id !== student._id));
+    },
+    [students]
+  );
 
   return (
     <>
@@ -136,14 +136,14 @@ function CourseForm() {
               Course Code
             </Typography>
             <Controller
-              name="courseCode"
+              name="code"
               control={control}
               render={({ field }) => (
                 <TextField
                   label="Course Code"
                   size="small"
-                  error={!!errors.courseCode}
-                  helperText={errors?.courseCode?.message}
+                  error={!!errors.code}
+                  helperText={errors?.code?.message}
                   sx={{ bgcolor: "white" }}
                   {...field}
                 />
@@ -153,18 +153,18 @@ function CourseForm() {
 
           <Stack direction="row" gap={2} width="100%">
             <Typography variant="h6" color="primary" minWidth="125px">
-              Course Name
+              Course Title
             </Typography>
             <Controller
-              name="courseName"
+              name="title"
               control={control}
               render={({ field }) => (
                 <TextField
-                  label="Course Name"
+                  label="Course Title"
                   size="small"
                   fullWidth
-                  error={!!errors.courseName}
-                  helperText={errors?.courseName?.message}
+                  error={!!errors.title}
+                  helperText={errors?.title?.message}
                   sx={{ bgcolor: "white" }}
                   {...field}
                 />
@@ -224,8 +224,9 @@ function CourseForm() {
           p={2}
           width="100%"
         >
-          <Stack direction="row" gap={2}>
+          <Stack component="form" direction="row" gap={2}>
             <TextField
+              type="email"
               label="Add Student"
               size="small"
               placeholder="Enter student email to add"
@@ -233,7 +234,13 @@ function CourseForm() {
               onChange={(e) => setStudentEmail(e.target.value)}
               sx={{ minWidth: 180, bgcolor: "white" }}
             />
-            <Button variant="contained" color="primary" disableElevation>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disableElevation
+              onClick={handleAddStudent}
+            >
               Add Student
             </Button>
           </Stack>
@@ -257,7 +264,8 @@ function CourseForm() {
         </Stack>
         <CourseStudentsDataGrid
           loading={loading}
-          students={id ? students : []}
+          students={students}
+          handleRemoveStudent={handleRemoveStudent}
         />
       </Stack>
     </>
@@ -267,11 +275,11 @@ function CourseForm() {
 export default CourseForm;
 
 const validationSchema = Yup.object().shape({
-  courseCode: Yup.string()
+  code: Yup.string()
     .min(4, "Course code should be at least 4 characters long")
     .max(8, "Course code is too long")
     .required("Course code is required"),
-  courseName: Yup.string()
+  title: Yup.string()
     .min(10, "Course name should be at least 10 characters long")
     .max(1000, "Course name is too long")
     .required("Course name is required"),

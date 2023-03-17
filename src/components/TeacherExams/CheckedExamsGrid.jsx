@@ -1,4 +1,5 @@
 import EditIcon from "@mui/icons-material/Edit";
+import PreviewIcon from "@mui/icons-material/Preview";
 import { Box, IconButton, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
 import { useNavigate } from "react-router-dom";
@@ -228,9 +229,16 @@ function CheckedExamsGrid() {
       align: "center",
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => navigate(`unchecked/${params.row.id}`)}>
-            <EditIcon />
+          <IconButton onClick={() => navigate(`checked/view/${params.row.id}`)}>
+            <PreviewIcon />
           </IconButton>
+          {params.row.type === "subjective" && (
+            <IconButton
+              onClick={() => navigate(`checked/edit/${params.row.id}`)}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
         </>
       ),
     },

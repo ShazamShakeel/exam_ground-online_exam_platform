@@ -19,6 +19,7 @@ import Results from "pages/Results";
 import Signup from "pages/Signup";
 import SignupVerification from "pages/SignupVerification";
 import Students from "pages/Students";
+import ViewCheckedExam from "pages/ViewCheckedExam";
 import {
   Route,
   createBrowserRouter,
@@ -50,6 +51,11 @@ const routes = createBrowserRouter(
             <Route element={<TeacherRoute />}>
               <Route path="create/mcq-exam" element={<ExamForm />} />
               <Route path="create/subjective-exam" element={<ExamForm />} />
+              <Route path="checked">
+                <Route path="view">
+                  <Route path=":id" element={<ViewCheckedExam />} />
+                </Route>
+              </Route>
             </Route>
           </Route>
 
