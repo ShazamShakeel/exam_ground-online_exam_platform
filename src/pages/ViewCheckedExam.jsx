@@ -2,15 +2,17 @@ import {
   Box,
   Button,
   Divider,
-  Grid,
   Paper,
   Radio,
   Stack,
   Typography,
 } from "@mui/material";
+import { useMemo, useRef } from "react";
 import ReactHtmlParser from "react-html-parser";
+import { useReactToPrint } from "react-to-print";
 
 export default function ViewCheckedExam() {
+  const componentRef = useRef();
   const exam = {
     id: 1,
     student: {
@@ -25,74 +27,90 @@ export default function ViewCheckedExam() {
     },
     title: "Exam 1",
     duration: 60,
-    // type: "mcq",
-    type: "subjective",
+    type: "mcq",
+    // type: "subjective",
     eachMCQMark: 2,
     totalMarks: 10,
     marksObtained: 6,
-    // questions: [
-    //   {
-    //     question: "<p>What is the capital of France?</p>",
-    //     options: ["Paris", "London", "Rome", "Berlin"],
-    //     correctOption: "Paris",
-    //     selectedOption: "Paris",
-    //   },
-    //   {
-    //     question: "<p>What is the capital of England?</p>",
-    //     options: ["Paris", "London", "Rome", "Berlin"],
-    //     correctOption: "London",
-    //     selectedOption: "London",
-    //   },
-    //   {
-    //     question: "<p>What is the capital of Italy?</p>",
-    //     options: ["Paris", "London", "Rome", "Berlin"],
-    //     correctOption: "Rome",
-    //     selectedOption: "London",
-    //   },
-    //   {
-    //     question: "<p>What is the capital of Germany?</p>",
-    //     options: ["Paris", "London", "Rome", "Berlin"],
-    //     correctOption: "Berlin",
-    //     selectedOption: "Berlin",
-    //   },
-    //   {
-    //     question: "<p>What is the capital of Spain?</p>",
-    //     options: ["Paris", "London", "Rome", "Berlin"],
-    //     correctOption: "Madrid",
-    //     selectedOption: "London",
-    //   },
-    // ],
     questions: [
       {
-        question: "What is the value of x in the equation 2x + 5 = 15?",
-        answer: "x = 5",
-        marks: 5,
-        obtainedMarks: 5,
+        question: "<p>What is the capital of France?</p>",
+        options: ["Paris", "London", "Rome", "Berlin"],
+        correctOption: "Paris",
+        selectedOption: "Paris",
       },
       {
-        question: "Solve for y: 3y + 8 = 20",
-        answer: "y = 4",
-        marks: 5,
-        obtainedMarks: 4,
+        question: "<p>What is the capital of England?</p>",
+        options: ["Paris", "London", "Rome", "Berlin"],
+        correctOption: "London",
+        selectedOption: "London",
       },
       {
-        question: "What is the area of a rectangle with length 10 and width 5?",
-        answer: "50",
-        marks: 10,
-        obtainedMarks: 10,
+        question: "<p>What is the capital of Italy?</p>",
+        options: ["Paris", "London", "Rome", "Berlin"],
+        correctOption: "Rome",
+        selectedOption: "London",
+      },
+      {
+        question: "<p>What is the capital of Germany?</p>",
+        options: ["Paris", "London", "Rome", "Berlin"],
+        correctOption: "Berlin",
+        selectedOption: "Berlin",
+      },
+      {
+        question: "<p>What is the capital of Spain?</p>",
+        options: ["Paris", "London", "Rome", "Berlin"],
+        correctOption: "Madrid",
+        selectedOption: "London",
       },
     ],
+    // questions: [
+    //   {
+    //     question: "What is the value of x in the equation 2x + 5 = 15?",
+    //     answer: "x = 5",
+    //     marks: 5,
+    //     obtainedMarks: 5,
+    //   },
+    //   {
+    //     question: "Solve for y: 3y + 8 = 20",
+    //     answer: "y = 4",
+    //     marks: 5,
+    //     obtainedMarks: 4,
+    //   },
+    //   {
+    //     question: "What is the area of a rectangle with length 10 and width 5?",
+    //     answer: "50",
+    //     marks: 10,
+    //     obtainedMarks: 10,
+    //   },
+    // ],
   };
+
+  const generatePDF = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  const marginTopBottom = "15px";
+  const marginLeftRight = "15px";
+  const pageMargins = useMemo(() => {
+    return `@page { margin: ${marginTopBottom} ${marginLeftRight} !important; }`;
+  }, []);
 
   return (
     <Stack direction="column">
       <Box ml="auto" p={2} minWidth={200}>
-        <Button variant="contained" size="large" fullWidth>
-          Print Exam
+        <Button
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={generatePDF}
+        >
+          Download Exam PDF
         </Button>
       </Box>
-      <Paper sx={{ p: 4, m: 2 }}>
-        <Stack direction="column" gap={2}>
+      <Paper sx={{ m: 2 }}>
+        <style>{pageMargins}</style>
+        <Stack direction="column" gap={2} p={4} ref={componentRef}>
           <Typography
             variant="h4"
             component="h1"
@@ -102,59 +120,59 @@ export default function ViewCheckedExam() {
           >
             {exam.title}
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
+          <Box display="flex" flexWrap="wrap" gap={2}>
+            <Box minWidth={225}>
               <Typography variant="h6" component="h2">
                 <strong>Teacher ID:</strong> {exam.teacher.id}
               </Typography>
-            </Grid>
-            <Grid item xs={3}>
+            </Box>
+            <Box minWidth={300}>
               <Typography variant="h6" component="h2">
                 <strong>Teacher Name:</strong> {exam.teacher.name}
               </Typography>
-            </Grid>
-            <Grid item xs={4}>
+            </Box>
+            <Box>
               <Typography variant="h6" component="h2">
                 <strong>Teacher Email:</strong> {exam.teacher.email}
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
+            </Box>
+          </Box>
+          <Box display="flex" flexWrap="wrap" gap={2}>
+            <Box minWidth={225}>
               <Typography variant="h6" component="h2">
                 <strong>Student ID:</strong> {exam.student.id}
               </Typography>
-            </Grid>
-            <Grid item xs={3}>
+            </Box>
+            <Box minWidth={300}>
               <Typography variant="h6" component="h2">
                 <strong>Student Name:</strong> {exam.student.name}
               </Typography>
-            </Grid>
-            <Grid item xs={4}>
+            </Box>
+            <Box>
               <Typography variant="h6" component="h2">
                 <strong>Student Email:</strong> {exam.student.email}
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
+            </Box>
+          </Box>
+          <Box display="flex" flexWrap="wrap" gap={2}>
             {exam.type === "mcq" && (
-              <Grid item xs={4}>
+              <Box minWidth={225}>
                 <Typography variant="h6" component="h2">
                   <strong>Each MCQ Marks</strong>: {exam.eachMCQMark}
                 </Typography>
-              </Grid>
+              </Box>
             )}
-            <Grid item xs={2}>
+            <Box minWidth={225}>
               <Typography variant="h6" component="h2">
                 <strong>Marks Obtained:</strong> {exam.marksObtained}
               </Typography>
-            </Grid>
-            <Grid item={2}>
+            </Box>
+            <Box>
               <Typography variant="h6" component="h2">
                 <strong>Total Marks:</strong> {exam.totalMarks}
               </Typography>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
           <Divider variant="middle" />
           <Stack direction="column" gap={2}>
             {exam.questions.map((question, index) => (
