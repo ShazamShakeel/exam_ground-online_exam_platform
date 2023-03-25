@@ -1,7 +1,8 @@
-import { Box, Card, Divider, Stack, Typography } from "@mui/material";
-import Carousel from "react-multi-carousel";
+import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export default function Exams() {
+function StudentExams() {
+  const navigate = useNavigate();
   const exams = [
     {
       id: 1,
@@ -105,52 +106,21 @@ export default function Exams() {
     },
   ];
 
-  const responsive = {
-    xxxl: {
-      breakpoint: { max: 4000, min: 1920 },
-      items: 6,
-      partialVisibilityGutter: 50,
-    },
-    xxl: {
-      breakpoint: { max: 1920, min: 1536 },
-      items: 5,
-      partialVisibilityGutter: 50,
-    },
-    xl: {
-      breakpoint: { max: 1536, min: 1280 },
-      items: 3,
-      partialVisibilityGutter: 40,
-    },
-    lg: {
-      breakpoint: { max: 1280, min: 1024 },
-      items: 3,
-      partialVisibilityGutter: 40,
-    },
-    md: {
-      breakpoint: { max: 1024, min: 360 },
-      items: 2,
-      partialVisibilityGutter: 30,
-    },
-    xs: {
-      breakpoint: { max: 360, min: 0 },
-      items: 1,
-      partialVisibilityGutter: 30,
-    },
-  };
-
   return (
-    <Box my={2}>
+    <>
       <Typography
         variant="h4"
-        component="h2"
+        component="h1"
         fontWeight="bold"
+        textAlign="center"
         color="primary"
-        mb={2}
+        py={1}
       >
         Exams
       </Typography>
-      {exams.length ? (
-        <Carousel responsive={responsive}>
+      <Divider variant="middle" sx={{ mb: 1 }} />
+      <Stack direction="column" gap={2}>
+        <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center">
           {exams.map((exam) => (
             <Card
               key={exam?.id}
@@ -158,11 +128,10 @@ export default function Exams() {
               sx={{
                 height: { xs: "200px", lg: "250px" },
                 width: { lg: "300px", xl: "300px" },
-                p: 2,
                 m: 1,
               }}
             >
-              <Stack direction="column" gap={1}>
+              <Stack direction="column" gap={1} p={2}>
                 <Typography variant="subtitle1" textAlign="center">
                   <strong>Date: </strong>
                   {exam?.date}
@@ -184,15 +153,27 @@ export default function Exams() {
                   {exam?.duration}
                 </Typography>
               </Stack>
+              <Box textAlign="right" pr={2}>
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => navigate(`/exams/attempt/${exam.id}`)}
+                  sx={{ mt: 2 }}
+                >
+                  Attempt Exam
+                </Button>
+              </Box>
             </Card>
           ))}
-        </Carousel>
-      ) : (
-        <Typography variant="body1" color="text.secondary">
-          No courses found
-        </Typography>
-      )}
-      <Divider variant="middle" sx={{ my: 2 }} />
-    </Box>
+        </Box>
+        <Box textAlign="center">
+          <Button color="primary" size="large">
+            Load More
+          </Button>
+        </Box>
+      </Stack>
+    </>
   );
 }
+
+export default StudentExams;

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 function Announcements() {
   const navigate = useNavigate();
-  // const user = useSelector((state) => state.auth);
+  const userRole = useSelector((state) => state.auth.userRole);
   const loading = useSelector(
     (state) => state?.announcements?.loading ?? false
   );
@@ -133,6 +133,7 @@ function Announcements() {
       headerName: "Actions",
       minWidth: 150,
       flex: 0.25,
+      hide: userRole === "student",
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
           <IconButton
@@ -167,15 +168,17 @@ function Announcements() {
         Announcements
       </Typography>
       <Divider variant="middle" sx={{ mb: 1 }} />
-      <Stack direction="row" my={2}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate("create")}
-        >
-          Add New Announcement
-        </Button>
-      </Stack>
+      {userRole === "teacher" && (
+        <Stack direction="row" my={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("create")}
+          >
+            Add New Announcement
+          </Button>
+        </Stack>
+      )}
       <CustomDataGrid
         loading={loading}
         rows={announcements}

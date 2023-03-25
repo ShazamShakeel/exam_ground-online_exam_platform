@@ -5,89 +5,73 @@ export default function Announcements() {
   const announcements = [
     {
       id: 1,
-      code: "COMP101",
-      name: "Introduction to Computer Science",
+      title: "System Maintenance",
       description:
-        "An introduction to computer programming and problem solving.",
-      students: 50,
-      exams: 2,
+        "Our system will be undergoing maintenance on March 1st from 8:00 PM to 10:00 PM. During this time, the system will be temporarily unavailable.",
+      date: "2023-02-25",
     },
     {
       id: 2,
-      code: "MATH201",
-      name: "Calculus I",
+      title: "New Exam Added",
       description:
-        "Limits, derivatives, and integrals of algebraic, trigonometric, exponential, and logarithmic functions.",
-      students: 40,
-      exams: 3,
+        "We have added a new exam on 'Introduction to Computer Science'. Please check the 'Exams' tab for more details.",
+      date: "2023-02-18",
     },
     {
       id: 3,
-      code: "PSYC101",
-      name: "Introduction to Psychology",
+      title: "Exam Schedule Change",
       description:
-        "An overview of the scientific study of behavior and mental processes.",
-      students: 60,
-      exams: 2,
+        "The exam on 'Database Management Systems' previously scheduled for March 5th has been rescheduled to March 12th. Please check the 'Exams' tab for more details.",
+      date: "2023-02-16",
     },
     {
       id: 4,
-      code: "PHIL202",
-      name: "Ethics",
-      description: "The study of moral values and principles.",
-      students: 30,
-      exams: 2,
+      title: "Exam Results Available",
+      description:
+        "The results for the 'Operating Systems' exam are now available. Please check the 'Results' tab for more details.",
+      date: "2023-02-14",
     },
     {
       id: 5,
-      code: "ENGL101",
-      name: "Composition I",
+      title: "System Upgrade",
       description:
-        "Fundamentals of writing, including grammar, mechanics, and organization.",
-      students: 45,
-      exams: 3,
+        "We are upgrading our system to improve its performance and stability. During this time, the system may be temporarily unavailable. We apologize for any inconvenience.",
+      date: "2023-02-11",
     },
     {
       id: 6,
-      code: "HIST201",
-      name: "American History to 1865",
+      title: "New Feature Added",
       description:
-        "The history of the United States from pre-Columbian times to the end of the Civil War.",
-      students: 35,
-      exams: 2,
+        "We have added a new feature that allows you to bookmark questions during an exam. Please check the 'Features' tab for more details.",
+      date: "2023-02-09",
     },
     {
       id: 7,
-      code: "BIOL101",
-      name: "Introduction to Biology",
+      title: "Exam Registration Open",
       description:
-        "The study of living organisms and their interactions with the environment.",
-      students: 55,
-      exams: 2,
+        "Registration for the 'Web Development' exam is now open. Please check the 'Exams' tab for more details.",
+      date: "2023-02-06",
     },
     {
       id: 8,
-      code: "SPAN101",
-      name: "Beginning Spanish I",
-      description: "An introduction to the Spanish language and culture.",
-      students: 20,
-      exams: 4,
+      title: "Exam Cancellation",
+      description:
+        "The exam on 'Computer Networks' scheduled for March 8th has been cancelled. We apologize for any inconvenience.",
+      date: "2023-02-04",
     },
     {
       id: 9,
-      code: "PHYS101",
-      name: "Introduction to Physics",
-      description: "The study of matter and energy and their interactions.",
-      students: 40,
-      exams: 3,
+      title: "New Exam Added",
+      description:
+        "We have added a new exam on 'Data Structures and Algorithms'. Please check the 'Exams' tab for more details.",
+      date: "2023-02-01",
     },
     {
       id: 10,
-      code: "ARTS101",
-      name: "Art Appreciation",
-      description: "An introduction to the history and appreciation of art.",
-      students: 25,
-      exams: 1,
+      title: "System Downtime",
+      description:
+        "Our system will be down for maintenance on February 28th from 10:00 PM to 12:00 AM. During this time, the system will be unavailable.",
+      date: "2023-01-28",
     },
   ];
 
@@ -142,7 +126,7 @@ export default function Announcements() {
               key={announcement?.id}
               elevation={3}
               sx={{
-                height: { xs: "200px", lg: "250px" },
+                maxHeight: { xs: "200px", lg: "250px" },
                 width: { lg: "300px", xl: "300px" },
                 p: 2,
                 m: 1,
@@ -150,14 +134,11 @@ export default function Announcements() {
             >
               <Stack direction="column" gap={1}>
                 <Typography
-                  variant="body2"
-                  color="text.secondary"
+                  variant="body1"
+                  fontWeight="bold"
                   textAlign="center"
                 >
-                  {announcement?.code}
-                </Typography>
-                <Typography variant="body1" fontWeight="bold">
-                  {announcement?.name}
+                  {announcement?.title}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -173,13 +154,9 @@ export default function Announcements() {
                 >
                   {announcement?.description}
                 </Typography>
-                <Typography variant="subtitle1">
-                  <strong>Students: </strong>
-                  {announcement?.students}
-                </Typography>
-                <Typography variant="subtitle1">
-                  <strong>Exams: </strong>
-                  {announcement?.exams}
+                <Typography variant="subtitle1" textAlign="right">
+                  <strong>Date: </strong>
+                  {announcement?.date}
                 </Typography>
               </Stack>
             </Card>
