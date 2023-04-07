@@ -3,7 +3,7 @@ import Carousel from "react-multi-carousel";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function CoursePastExams({ exams, examsCount }) {
+export default function CoursePastExams({ exams }) {
   const navigate = useNavigate();
   const userRole = useSelector((state) => state?.auth?.userRole);
   const responsive = {
@@ -41,20 +41,15 @@ export default function CoursePastExams({ exams, examsCount }) {
 
   return (
     <Box my={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography
-          variant="h5"
-          component="h2"
-          fontWeight="bold"
-          color="primary"
-          mb={1}
-        >
-          Previous Exams
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {examsCount} exams found
-        </Typography>
-      </Stack>
+      <Typography
+        variant="h5"
+        component="h2"
+        fontWeight="bold"
+        color="primary"
+        mb={1}
+      >
+        Previous Exams
+      </Typography>
       {exams.length ? (
         <Carousel responsive={responsive}>
           {exams.map((exam) => (

@@ -10,7 +10,9 @@ import FaceIdLogo from "assets/images/FaceId-Logo.svg";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { updateProfile } from "store/slices/authSlice";
+import handleFaceioError from "utils/helpers/faceioErrorHandler";
 
 export default function RegisterFaceContainer() {
   const faceio = useRef(null);
@@ -36,9 +38,9 @@ export default function RegisterFaceContainer() {
       .then((res) => {
         dispatch(updateProfile({ facialId: res.facialId }))
           .unwrap()
-          .then(() => navigate("/dashboard"));
+          .then(() => setTimeout(() => navigate("/dashboard"), 3000));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => toast.error(handleFaceioError(err)));
   };
 
   const handleSkip = () => {

@@ -1,95 +1,40 @@
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 
 function CoursesCardsWithPagination() {
-  const courses = [
-    {
-      id: 1,
-      code: "COMP101",
-      name: "Introduction to Computer Science",
-      description:
-        "An introduction to computer programming and problem solving.",
-      students: 50,
-      exams: 2,
-    },
-    {
-      id: 2,
-      code: "MATH201",
-      name: "Calculus I",
-      description:
-        "Limits, derivatives, and integrals of algebraic, trigonometric, exponential, and logarithmic functions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 3,
-      code: "PSYC101",
-      name: "Introduction to Psychology",
-      description:
-        "An overview of the scientific study of behavior and mental processes.",
-      students: 60,
-      exams: 2,
-    },
-    {
-      id: 4,
-      code: "PHIL202",
-      name: "Ethics",
-      description: "The study of moral values and principles.",
-      students: 30,
-      exams: 2,
-    },
-    {
-      id: 5,
-      code: "ENGL101",
-      name: "Composition I",
-      description:
-        "Fundamentals of writing, including grammar, mechanics, and organization.",
-      students: 45,
-      exams: 3,
-    },
-    {
-      id: 6,
-      code: "HIST201",
-      name: "American History to 1865",
-      description:
-        "The history of the United States from pre-Columbian times to the end of the Civil War.",
-      students: 35,
-      exams: 2,
-    },
-    {
-      id: 7,
-      code: "BIOL101",
-      name: "Introduction to Biology",
-      description:
-        "The study of living organisms and their interactions with the environment.",
-      students: 55,
-      exams: 2,
-    },
-    {
-      id: 8,
-      code: "SPAN101",
-      name: "Beginning Spanish I",
-      description: "An introduction to the Spanish language and culture.",
-      students: 20,
-      exams: 4,
-    },
-    {
-      id: 9,
-      code: "PHYS101",
-      name: "Introduction to Physics",
-      description: "The study of matter and energy and their interactions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 10,
-      code: "ARTS101",
-      name: "Art Appreciation",
-      description: "An introduction to the history and appreciation of art.",
-      students: 25,
-      exams: 1,
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const getCourses = useCallback(() => {
+    axiosInstance
+      .get(`course`, {
+        params: {
+          students: localStorage.getItem("userId"),
+          populate: "teacher",
+          page,
+          limit: 10,
+        },
+      })
+      .then((response) => {
+        setCourses((prevCourses) => [...prevCourses, ...response.data.results]);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  }, [page]);
+
+  const handlePagination = () => {
+    setPage((page) => page + 1);
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, [getCourses, page]);
 
   return (
     <Stack direction="column" gap={2}>
@@ -117,7 +62,7 @@ function CoursesCardsWithPagination() {
                 {course?.code}
               </Typography>
               <Typography variant="body1" fontWeight="bold">
-                {course?.name}
+                {course?.title}
               </Typography>
               <Typography
                 variant="body1"
@@ -134,22 +79,24 @@ function CoursesCardsWithPagination() {
                 {course?.description}
               </Typography>
               <Typography variant="subtitle1">
-                <strong>Students: </strong>
-                {course?.students}
+                <strong>Teacher: </strong>
+                {course?.teacher?.name}
               </Typography>
               <Typography variant="subtitle1">
-                <strong>Exams: </strong>
-                {course?.exams}
+                <strong>Class Students: </strong>
+                {course?.students?.length}
               </Typography>
             </Stack>
           </Card>
         ))}
       </Box>
-      <Box textAlign="center">
-        <Button color="primary" size="large">
-          Load More
-        </Button>
-      </Box>
+      {page < totalPages && (
+        <Box textAlign="center">
+          <Button color="primary" size="large" onClick={handlePagination}>
+            Load More
+          </Button>
+        </Box>
+      )}
     </Stack>
   );
 }

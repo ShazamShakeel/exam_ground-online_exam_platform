@@ -1,34 +1,7 @@
-import { Pagination, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { useCallback } from "react";
-import { useParams } from "react-router-dom";
 
-const CustomDataGrid = ({
-  rows,
-  columns,
-  loading,
-  totalPages,
-  handlePagination,
-}) => {
-  const params = useParams();
-  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
-
-  const customPagination = useCallback(() => {
-    const _page = params.page ? parseInt(params.page) : 1;
-    window.scrollTo(0, 0);
-    return (
-      <Pagination
-        sx={{ marginY: 4 }}
-        size={isSmall ? "small" : "large"}
-        count={totalPages}
-        page={_page}
-        disabled={totalPages === 1}
-        onChange={handlePagination}
-      />
-    );
-  }, [params.page, isSmall, totalPages, handlePagination]);
-
+const CustomDataGrid = ({ rows, columns, loading }) => {
   return (
     <Box sx={containerStyles}>
       <DataGrid
@@ -38,7 +11,6 @@ const CustomDataGrid = ({
         loading={loading}
         autoHeight
         disableSelectionOnClick
-        // checkboxSelection
         getRowHeight={() => "auto"}
         getRowSpacing={(params) => ({
           top: params.isFirstVisible ? 0 : 5,
@@ -46,9 +18,8 @@ const CustomDataGrid = ({
         })}
         isCellEditable={() => false}
         getRowId={(row) => row.id}
+        pageSize={10}
         pagination
-        rowsPerPageOptions={[10, 15, 20]}
-        components={{ Pagination: customPagination }}
       />
     </Box>
   );

@@ -106,43 +106,23 @@ export const updatePassword = createAsyncThunk(
   }
 );
 
-// export const sendEmailVerification = createAsyncThunk(
-//   "auth/sendEmailVerification",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.post(
-//         `/auth/send-email-verification`
-//       );
-//       toast.success("Email verification OTP has been sent to your email");
-//       return response?.data;
-//     } catch (error) {
-//       const message =
-//         error?.response?.data?.message ??
-//         error?.message ??
-//         "Something went wrong, please try again later";
-//       toast.error(message);
-//       return rejectWithValue(message);
-//     }
-//   }
-// );
-
-// export const verifyEmail = createAsyncThunk(
-//   "auth/verifyEmail",
-//   async (data, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.post(`/auth/verify-email`, data);
-//       toast.success("Email has been successfully verified");
-//       return response?.data;
-//     } catch (error) {
-//       const message =
-//         error?.response?.data?.message ??
-//         error?.message ??
-//         "Something went wrong, please try again later";
-//       toast.error(message);
-//       return rejectWithValue(message);
-//     }
-//   }
-// );
+export const verifyEmail = createAsyncThunk(
+  "auth/verifyEmail",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/auth/verify-email`, data);
+      toast.success("Email has been successfully verified");
+      return response?.data;
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        "Something went wrong, please try again later";
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);
 
 const setAuthState = (state, action) => {
   state.token = action?.payload?.tokens?.access?.token;
@@ -240,7 +220,7 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = "";
       })
-      .addCase(updatePassword.fulfilled, (state, action) => {
+      .addCase(updatePassword.fulfilled, (state) => {
         state.loading = false;
         state.error = "";
       })
@@ -260,29 +240,20 @@ const authSlice = createSlice({
       .addCase(updateProfileImg.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(verifyEmail.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(verifyEmail.fulfilled, (state) => {
+        state.loading = false;
+        state.isVerified = true;
+        localStorage.setItem("isVerified", true);
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
-    // .addCase(sendEmailVerification.pending, (state) => {
-    //   state.loading = true;
-    //   state.error = "";
-    // })
-    // .addCase(sendEmailVerification.fulfilled, (state, action) => {
-    //   setAuthState(state, action);
-    // })
-    // .addCase(sendEmailVerification.rejected, (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.payload;
-    // })
-    // .addCase(verifyEmail.pending, (state) => {
-    //   state.loading = true;
-    //   state.error = "";
-    // })
-    // .addCase(verifyEmail.fulfilled, (state, action) => {
-    //   setAuthState(state, action);
-    // })
-    // .addCase(verifyEmail.rejected, (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.payload;
-    // });
   },
 });
 

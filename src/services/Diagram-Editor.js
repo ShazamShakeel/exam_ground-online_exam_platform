@@ -7,14 +7,15 @@
  *
  * See https://jgraph.github.io/drawio-integration/javascript.html
  */
-export function DiagramEditor(
-  config,
-  ui,
-  done,
-  initialized,
-  urlParams,
-  setData
-) {
+
+let setDiagramData = null;
+
+export const editDiagram = (element, setData) => {
+  setDiagramData = setData;
+  DiagramEditor.editElement(element);
+};
+
+export function DiagramEditor(config, ui, done, initialized, urlParams) {
   this.config = config != null ? config : this.config;
   this.ui = ui != null ? ui : this.ui;
   this.done = done != null ? done : this.done;
@@ -34,7 +35,6 @@ export function DiagramEditor(
 
         if (msg != null) {
           self.handleMessage(msg);
-          setData(msg?.data);
         }
       } catch (e) {
         console.error(e);
@@ -46,14 +46,7 @@ export function DiagramEditor(
 /**
  * Static method to edit the diagram in the given img or object.
  */
-DiagramEditor.editElement = function (
-  elt,
-  config,
-  ui,
-  done,
-  urlParams,
-  setData
-) {
+DiagramEditor.editElement = function (elt, config, ui, done, urlParams) {
   if (!elt.diagramEditorStarting) {
     elt.diagramEditorStarting = true;
 
@@ -64,8 +57,7 @@ DiagramEditor.editElement = function (
       function () {
         delete elt.diagramEditorStarting;
       },
-      urlParams,
-      setData
+      urlParams
     ).editElement(elt);
   }
 };
@@ -316,7 +308,8 @@ DiagramEditor.prototype.handleMessage = function (msg) {
   } else if (msg.event == "autosave") {
     this.save(msg.xml, true, this.startElement);
   } else if (msg.event == "export") {
-    this.setElementData(this.startElement, msg.data);
+    // this.setElementData(this.startElement, msg.data);
+    setDiagramData(msg.data);
     this.stopEditing();
     this.xml = null;
   } else if (msg.event == "save") {

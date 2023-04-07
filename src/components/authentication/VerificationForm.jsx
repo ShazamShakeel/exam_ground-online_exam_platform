@@ -7,8 +7,10 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ReactCodeInput from "react-verification-code-input";
-import { userEmailVerification } from "store/slices/authSlice";
+import { verifyEmail } from "store/slices/authSlice";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 
 export default function VerificationForm() {
   const dispatch = useDispatch();
@@ -16,6 +18,23 @@ export default function VerificationForm() {
   const loading = useSelector((state) => state.auth.loading);
   const email = useSelector((state) => state.auth.email);
   const [emailOTP, setEmailOTP] = useState("");
+
+  const handleEmailVerification = () => {
+    dispatch(verifyEmail({ OTP: emailOTP }))
+      .unwrap()
+      .then(() => {
+        navigate("/register-face");
+      });
+  };
+
+  const resendEmailOTP = () => {
+    axiosInstance
+      .post("auth/send-verification-email")
+      .then((response) => toast.success(response.data.message))
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  };
 
   return (
     <Container>
@@ -63,7 +82,7 @@ export default function VerificationForm() {
               fontWeight: "bold",
               textTransform: "none",
             }}
-            onClick={() => {}}
+            onClick={resendEmailOTP}
           >
             Resend Code
           </Button>
@@ -75,16 +94,9 @@ export default function VerificationForm() {
           variant="contained"
           color="primary"
           startIcon={loading && <CircularProgress size={20} thickness={6} />}
-          onClick={() => {
-            dispatch(
-              userEmailVerification({
-                isVerified: true,
-              })
-            );
-            navigate("/register-face");
-          }}
+          onClick={handleEmailVerification}
         >
-          NEXT
+          Verify
         </Button>
       </Stack>
     </Container>
