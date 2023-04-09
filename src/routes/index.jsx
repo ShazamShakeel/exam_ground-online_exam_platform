@@ -12,6 +12,7 @@ import Dashboard from "pages/Dashboard";
 import DateSheetForm from "pages/DateSheetForm";
 import DateSheets from "pages/DateSheets";
 import Exams from "pages/Exams";
+import JoinCourseByLink from "pages/JoinCourseByLink";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import Profile from "pages/Profile";
@@ -41,6 +42,7 @@ const routes = createBrowserRouter(
           <Route path="courses">
             <Route index element={<Courses />} />
             <Route path=":id" element={<Course />} />
+            <Route path="join/:id" element={<JoinCourseByLink />} />
             <Route element={<TeacherRoute />}>
               <Route path="create" element={<CourseForm />} />
               <Route path="edit/:id" element={<CourseForm />} />

@@ -1,19 +1,27 @@
-import { Box, Button, Card, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
 
 function CoursesCardsWithPagination() {
+  const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const getCourses = useCallback(() => {
+    setLoading(true);
     axiosInstance
       .get(`course`, {
         params: {
-          students: localStorage.getItem("userId"),
           populate: "teacher",
           page,
           limit: 10,
@@ -25,6 +33,9 @@ function CoursesCardsWithPagination() {
       })
       .catch((err) => {
         toast.error(err.response.data.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [page]);
 
@@ -90,6 +101,19 @@ function CoursesCardsWithPagination() {
           </Card>
         ))}
       </Box>
+
+      {loading && (
+        <Box
+          height="200px"
+          width="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <CircularProgress />
+        </Box>
+      )}
+
       {page < totalPages && (
         <Box textAlign="center">
           <Button color="primary" size="large" onClick={handlePagination}>

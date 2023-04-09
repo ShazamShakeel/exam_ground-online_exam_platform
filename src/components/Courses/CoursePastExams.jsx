@@ -1,11 +1,11 @@
-import { Box, Card, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import Carousel from "react-multi-carousel";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat);
 
 export default function CoursePastExams({ exams }) {
-  const navigate = useNavigate();
-  const userRole = useSelector((state) => state?.auth?.userRole);
+  // const navigate = useNavigate();
   const responsive = {
     xxxl: {
       breakpoint: { max: 4000, min: 1920 },
@@ -61,44 +61,45 @@ export default function CoursePastExams({ exams }) {
                 width: { lg: "300px", xl: "300px" },
                 p: 2,
                 m: 1,
-                cursor: "pointer",
               }}
-              onClick={() =>
-                navigate(
-                  userRole === "teacher"
-                    ? `/exams/edit/${exam?.id}`
-                    : `/exams/${exam?.id}`
-                )
-              }
             >
               <Stack direction="column" gap={1}>
                 <Typography variant="subtitle1" textAlign="center">
                   <strong>Date: </strong>
-                  {exam?.date ?? ""}
+                  {dayjs(exam?.date).format("LL") ?? ""}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Title: </strong>
                   {exam?.title ?? ""}
                 </Typography>
-                <Typography variant="body2">
-                  <strong>Course Code: </strong>
-                  {exam?.courseCode ?? ""}
+                <Typography variant="body1">
+                  <strong>Teacher </strong>
+                  {exam?.teacher?.name ?? ""}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Course: </strong>
-                  {exam?.courseName ?? ""}
+                  <strong>Total Marks: </strong>
+                  {exam?.totalMarks ?? ""}
                 </Typography>
                 <Typography variant="subtitle1">
                   <strong>Duration: </strong>
-                  {exam?.duration ?? ""}
+                  {`${exam?.duration ?? ""} minutes`}
                 </Typography>
               </Stack>
+              <Box mt={1} textAlign="right">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => null}
+                >
+                  Practice
+                </Button>
+              </Box>
             </Card>
           ))}
         </Carousel>
       ) : (
         <Typography variant="body1" color="text.secondary">
-          No courses found
+          Course has no previous exams
         </Typography>
       )}
     </Box>
