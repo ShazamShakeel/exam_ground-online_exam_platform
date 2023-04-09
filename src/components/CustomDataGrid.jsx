@@ -17,7 +17,7 @@ const CustomDataGrid = ({ rows, columns, loading }) => {
           bottom: params.isLastVisible ? 0 : 5,
         })}
         isCellEditable={() => false}
-        getRowId={(row) => row.id}
+        getRowId={(row) => row._id ?? row.id}
         pageSize={10}
         pagination
       />

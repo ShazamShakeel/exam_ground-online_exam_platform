@@ -40,13 +40,23 @@ export default function SignUpForm() {
     firstName: Yup.string().required("Required").max(12),
     lastName: Yup.string().required("Required").max(12),
     university: Yup.string().required("Required"),
-    email: Yup.string()
-      .required("Email is required")
-      .email("Please provide your university email")
-      .matches(
-        /^[a-zA-Z0-9_.+-]+@(numl|bahria|fast)\.edu.pk$/,
-        "University email is incorrect"
-      ),
+    email: Yup.string().when([], {
+      is: () => selectedTab === "teacher",
+      then: Yup.string()
+        .required("Email is required")
+        .email("Please provide your university email")
+        .matches(
+          /^[a-zA-Z0-9_.+-]+@(numl|bahria|fast)\.edu.pk$/,
+          "University email is incorrect"
+        ),
+      otherwise: Yup.string()
+        .required("Email is required")
+        .email("Please provide your university email")
+        .matches(
+          /^[a-zA-Z0-9_.+-]+@(numls|bahria|fast)\.edu.pk$/,
+          "University email is incorrect"
+        ),
+    }),
     password: Yup.string()
       .required("Password is required")
       .matches(
