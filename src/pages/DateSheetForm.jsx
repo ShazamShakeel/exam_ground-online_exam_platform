@@ -20,7 +20,6 @@ import axiosInstance from "utils/httpRequest/axiosInstance";
 function DateSheetForm() {
   const navigate = useNavigate();
   const id = useParams()?.id;
-  const datesheet = null;
   const [courses, setCourses] = useState([]);
   const [course, setCourse] = useState(null);
   const [courseError, setCourseError] = useState("");

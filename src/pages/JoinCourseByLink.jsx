@@ -17,7 +17,6 @@ export default function JoinCourseByLink() {
   const [loading, setLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(true);
   const [course, setCourse] = useState(null);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     axiosInstance
@@ -27,10 +26,6 @@ export default function JoinCourseByLink() {
         setIsAdded(true);
       })
       .catch((err) => {
-        setError(
-          err.response.data.message ??
-            "Something went wrong, Please try again later"
-        );
         toast.error(
           err.response.data.message ??
             "Something went wrong, Please try again later"

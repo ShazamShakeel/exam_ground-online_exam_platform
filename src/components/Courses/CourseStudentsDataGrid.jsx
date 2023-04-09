@@ -59,10 +59,6 @@ function CourseStudentsDataGrid({
     },
   ];
 
-  const handlePagination = (_, page) => {
-    console.log("page", page);
-  };
-
   return (
     <>
       <CustomDataGrid loading={loading} rows={students} columns={columns} />
