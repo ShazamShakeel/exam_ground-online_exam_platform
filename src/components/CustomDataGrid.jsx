@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
 
 const CustomDataGrid = ({ rows, columns, loading }) => {
@@ -20,6 +21,20 @@ const CustomDataGrid = ({ rows, columns, loading }) => {
         getRowId={(row) => row._id ?? row.id}
         pageSize={10}
         pagination
+        components={{
+          NoRowsOverlay: () => (
+            <Box
+              height="100%"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Typography variant="h6" lineHeight={1} color="text.secondary">
+                No results found
+              </Typography>
+            </Box>
+          ),
+        }}
       />
     </Box>
   );
