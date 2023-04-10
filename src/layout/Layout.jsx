@@ -83,6 +83,7 @@ export default function Layout() {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(true);
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const userName = useSelector((state) => state.auth.name);
   const profileImg = useSelector((state) => state.auth.profileImg);
   const [listItems] = useState(
     localStorage.getItem("userRole") === "teacher"
@@ -146,7 +147,7 @@ export default function Layout() {
                   color="text.secondary"
                   fontWeight="bold"
                 >
-                  Exam Ground
+                  {userName ?? "N/A"}
                 </Typography>
               </Box>
               <Box>

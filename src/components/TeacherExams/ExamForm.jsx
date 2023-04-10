@@ -151,6 +151,7 @@ export default function ExamForm() {
     else if (isSubjectiveExam && totalMarks < 1)
       return setTotalMarksError("Total Marks must be greater than 0");
     else setTotalMarksError("");
+    if (!date) return setDateError("Date is required");
     if (!questions.length)
       return toast.error("Please add at least one question");
 
