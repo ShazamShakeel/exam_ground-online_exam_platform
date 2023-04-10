@@ -30,39 +30,20 @@ function ResultCard() {
 
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState({});
-  const [course, setCourse] = useState({});
   const isStudent = user.userRole === "student";
-
-  const getCourse = useCallback((id) => {
-    axiosInstance
-      .get(`/course/${id}`)
-      .then((res) => {
-        setCourse(res?.data);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
 
   const getResult = useCallback(() => {
     setLoading(true);
     axiosInstance
-      .get("/answer/" + examId, {
-        params: {
-          populate: isStudent ? "exam,teacher" : "exam,student",
-        },
-      })
+      .get("/answer/" + examId)
       .then((res) => {
         setResult(res?.data);
-        getCourse(res?.data?.exam?.course);
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message ?? "Something went wrong");
-      });
-  }, [examId, getCourse, isStudent]);
+      })
+      .finally(() => setLoading(false));
+  }, [examId]);
 
   useEffect(() => {
     getResult();
@@ -99,7 +80,7 @@ function ResultCard() {
                 <Typography variant="body1" fontWeight="bold">
                   Course:
                 </Typography>
-                <Typography variant="body1">{`${course.code}: ${course?.title}`}</Typography>
+                <Typography variant="body1">{`${result?.exam?.course?.code}: ${result?.exam?.course?.title}`}</Typography>
               </Stack>
               <Stack direction="row" gap={2}>
                 <Typography variant="body1" fontWeight="bold">

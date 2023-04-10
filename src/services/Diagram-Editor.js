@@ -96,7 +96,7 @@ DiagramEditor.prototype.libraries = true;
  * CSS style for the iframe.
  */
 DiagramEditor.prototype.frameStyle =
-  "position:absolute;border:0;width:100%;height:100%;z-index:2000;";
+  "position:fixed;border:0;width:100vw;height:100vh;z-index:2000;";
 
 /**
  * Adds the iframe and starts editing.

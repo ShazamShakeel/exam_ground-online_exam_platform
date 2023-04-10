@@ -9,8 +9,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -161,7 +161,7 @@ function DateSheetForm() {
                 Exam Date
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <MobileDateTimePicker
+                <DatePicker
                   label="Date"
                   value={date}
                   onChange={(value) => {

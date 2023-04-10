@@ -1,32 +1,48 @@
 import {
+  Autocomplete,
   Box,
   Button,
-  Checkbox,
   Divider,
   Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import blue from "@mui/material/colors/blue";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 import AddQuestion from "./AddQuestion";
 import UseOCR from "./UseOCR";
 
 export default function ExamForm() {
-  const examType = useLocation().pathname.split("/").includes("mcq-exam")
-    ? "mcq"
-    : "subjective";
+  const navigate = useNavigate();
+  const id = useParams()?.id;
+  const isSubjectiveExam = useLocation()
+    .pathname.split("/")
+    .includes("subjective-exam");
   const [open, setOpen] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState(null);
+  const [courseError, setCourseError] = useState("");
   const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState("");
   const [questions, setQuestions] = useState([]);
   const [editQuestionIndex, setEditQuestionIndex] = useState("");
   const [editQuestion, setEditQuestion] = useState(null);
   const [duration, setDuration] = useState(0);
-  const [browserSecurity, setBrowserSecurity] = useState(false);
+  const [durationError, setDurationError] = useState("");
   const [eachMcqMarks, setEachMcqMarks] = useState(0);
+  const [eachMcqMarksError, setEachMcqMarksError] = useState("");
   const [totalMarks, setTotalMarks] = useState(0);
+  const [totalMarksError, setTotalMarksError] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [dateError, setDateError] = useState("");
 
   const handleAddQuestion = (question) => {
     setQuestions((prevQuestions) => [...prevQuestions, question]);
@@ -50,16 +66,121 @@ export default function ExamForm() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("submit", {
-      title,
-      duration,
-      browserSecurity,
-      questions,
-      type: examType === "mcq" ? "mcq" : "subjective",
-      ...(examType === "mcq" ? eachMcqMarks : totalMarks),
-    });
+  const getCourses = () => {
+    axiosInstance
+      .get("/course")
+      .then((res) => {
+        setCourses(res?.data.results);
+      })
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ??
+            "Something went wrong while fetching courses"
+        );
+      });
   };
+
+  const createExam = () => {
+    axiosInstance
+      .post("/exam", {
+        course: course.id,
+        title,
+        duration,
+        date,
+        questions,
+        type: isSubjectiveExam ? "subjective" : "mcq",
+        ...(!isSubjectiveExam && { eachMcqMarks }),
+        totalMarks: isSubjectiveExam
+          ? totalMarks
+          : eachMcqMarks * questions.length,
+      })
+      .then(() => {
+        toast.success("Exam created successfully");
+        navigate("/exams");
+      })
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ??
+            "Something went wrong while creating exam"
+        );
+      });
+  };
+
+  const updateExam = () => {
+    axiosInstance
+      .patch(`/exam/${id}`, {
+        course: course.id,
+        title,
+        duration,
+        date,
+        questions,
+        type: isSubjectiveExam ? "subjective" : "mcq",
+        ...(!isSubjectiveExam && { eachMcqMarks }),
+        totalMarks: isSubjectiveExam
+          ? totalMarks
+          : eachMcqMarks * questions.length,
+      })
+      .then(() => {
+        toast.success("Exam updated successfully");
+        navigate("/exams");
+      })
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ??
+            "Something went wrong while updating exam"
+        );
+      });
+  };
+
+  const handleSubmit = () => {
+    if (!course) return setCourseError("Course is required");
+    else setCourseError("");
+    if (!title) return setTitleError("Title is required");
+    else setTitleError("");
+    if (!isSubjectiveExam && !eachMcqMarks)
+      return setEachMcqMarksError("Each MCQ Marks is required");
+    else if (!isSubjectiveExam && eachMcqMarks < 1)
+      return setEachMcqMarksError("Each MCQ Marks must be greater than 0");
+    else setEachMcqMarksError("");
+    if (!duration) return setDurationError("Duration is required");
+    else if (duration < 1)
+      return setDurationError("Duration must be greater than 0");
+    else setDurationError("");
+    if (isSubjectiveExam && !totalMarks)
+      return setTotalMarksError("Total Marks is required");
+    else if (isSubjectiveExam && totalMarks < 1)
+      return setTotalMarksError("Total Marks must be greater than 0");
+    else setTotalMarksError("");
+    if (!questions.length)
+      return toast.error("Please add at least one question");
+
+    id ? updateExam() : createExam();
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  useEffect(() => {
+    id &&
+      axiosInstance
+        .get(`/exam/${id}`)
+        .then((res) => {
+          setCourse(res?.data?.course);
+          setTitle(res?.data?.title);
+          setDuration(res?.data?.duration);
+          setQuestions(res?.data?.questions);
+          setEachMcqMarks(res?.data?.eachMcqMarks);
+          setTotalMarks(res?.data?.totalMarks);
+          setDate(new Date(res?.data?.date));
+        })
+        .catch((err) => {
+          toast.error(
+            err?.response?.data?.message ??
+              "Something went wrong while fetching exam"
+          );
+        });
+  }, [id]);
 
   useEffect(() => {
     console.log(questions);
@@ -76,13 +197,44 @@ export default function ExamForm() {
           color="primary"
           py={1}
         >
-          Create MCQ Based Exam
+          {`${id ? "Edit" : "Create"} ${
+            isSubjectiveExam ? "Subjective" : "MCQ"
+          } Exam`}
         </Typography>
         <Divider variant="middle" sx={{ mb: 1 }} />
         <UseOCR />
         <Divider variant="middle" sx={{ mb: 1 }} />
         <Stack direction="row" alignItems="center" gap={2}>
-          <Typography variant="h5" fontWeight="bold" color="primary">
+          <Typography variant="h6" fontWeight="bold" color="primary">
+            Course:
+          </Typography>
+          <Box width="100%">
+            <Autocomplete
+              value={course}
+              options={courses}
+              getOptionLabel={(option) => `${option.code}: ${option.title}`}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={(_, value) => setCourse(value)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Course"
+                  size="small"
+                  fullWidth
+                  error={!!courseError}
+                  helperText={courseError}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "white",
+                    },
+                  }}
+                />
+              )}
+            />
+          </Box>
+        </Stack>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography variant="h6" fontWeight="bold" color="primary">
             Title:
           </Typography>
           <TextField
@@ -97,16 +249,13 @@ export default function ExamForm() {
                 bgcolor: "white",
               },
             }}
+            error={!!titleError}
+            helperText={titleError}
           />
         </Stack>
-        {examType === "mcq" ? (
+        {!isSubjectiveExam ? (
           <Stack direction="row" alignItems="center" gap={2}>
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              color="primary"
-              minWidth={200}
-            >
+            <Typography variant="h6" fontWeight="bold" color="primary">
               Each MCQ Marks:
             </Typography>
             <TextField
@@ -120,21 +269,18 @@ export default function ExamForm() {
                   bgcolor: "white",
                 },
               }}
+              error={!!eachMcqMarksError}
+              helperText={eachMcqMarksError}
             />
           </Stack>
         ) : (
           <Stack direction="row" alignItems="center" gap={2}>
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              color="primary"
-              minWidth={200}
-            >
+            <Typography variant="h6" fontWeight="bold" color="primary">
               Total Marks:
             </Typography>
             <TextField
               variant="outlined"
-              value={eachMcqMarks}
+              value={totalMarks}
               onChange={(e) => setTotalMarks(e.target.value)}
               placeholder="Enter each MCQ marks"
               size="small"
@@ -143,16 +289,13 @@ export default function ExamForm() {
                   bgcolor: "white",
                 },
               }}
+              error={!!totalMarksError}
+              helperText={totalMarksError}
             />
           </Stack>
         )}
         <Stack direction="row" alignItems="center" gap={2}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            color="primary"
-            minWidth={200}
-          >
+          <Typography variant="h6" fontWeight="bold" color="primary">
             Duration:
           </Typography>
           <TextField
@@ -166,26 +309,43 @@ export default function ExamForm() {
                 bgcolor: "white",
               },
             }}
+            error={!!durationError}
+            helperText={durationError}
           />
         </Stack>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography
-            variant="h5"
+            variant="h6"
             fontWeight="bold"
             color="primary"
-            minWidth={200}
+            minWidth={100}
           >
-            Browser Security:
+            Exam Date:
           </Typography>
-          <Checkbox
-            checked={browserSecurity}
-            onChange={(e) => setBrowserSecurity(e.target.checked)}
-            sx={{
-              "&.MuiCheckbox-root": {
-                padding: "0 !important",
-              },
-            }}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={date}
+              onChange={(value) => {
+                setDate(value);
+              }}
+              disablePast
+              renderInput={(params) => (
+                <TextField
+                  fullWidth
+                  size="small"
+                  {...params}
+                  error={!!dateError}
+                  helperText={dateError}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      bgcolor: "white",
+                    },
+                  }}
+                />
+              )}
+            />
+          </LocalizationProvider>
         </Stack>
       </Stack>
       <Divider variant="middle" sx={{ my: 1 }} />
@@ -215,17 +375,44 @@ export default function ExamForm() {
         {questions.map((question, index) => (
           <Paper key={index} sx={{ p: 2 }}>
             <Stack direction="column" gap={1}>
-              <Typography variant="h6" fontWeight="bold" color="primary">
+              <Typography variant="body1" fontWeight="bold" color="primary">
                 Question:
               </Typography>
               <Box className="question" sx={{ pl: 2 }}>
                 {ReactHtmlParser(question.question)}
               </Box>
             </Stack>
-            {examType === "mcq" && (
+            {isSubjectiveExam ? (
+              <>
+                <Stack direction="row" alignItems="center" gap={2}>
+                  <Typography variant="body1" fontWeight="bold" color="primary">
+                    Marks:
+                  </Typography>
+                  <Typography variant="body1">{question.marks}</Typography>
+                </Stack>
+                {question.diagram && (
+                  <Stack direction="column" alignItems="center" gap={2}>
+                    <Typography variant="h6" fontWeight="bold" color="primary">
+                      Diagram:
+                    </Typography>
+                    <img
+                      src={question.diagram}
+                      alt="diagram"
+                      height="auto"
+                      width="250px"
+                      style={{
+                        padding: "1rem",
+                        border: `2px solid ${blue[500]}`,
+                        aspectRatio: "1/1",
+                      }}
+                    />
+                  </Stack>
+                )}
+              </>
+            ) : (
               <>
                 <Stack direction="column" gap={1}>
-                  <Typography variant="h6" fontWeight="bold" color="primary">
+                  <Typography variant="body1" fontWeight="bold" color="primary">
                     Options:
                   </Typography>
                   {question?.options?.map((option, index) => (
@@ -237,16 +424,16 @@ export default function ExamForm() {
                       sx={{ pl: 2 }}
                     >
                       <Typography variant="body1">{`${index + 1})`}</Typography>
-                      <Typography variant="body1">{option.text}</Typography>
+                      <Typography variant="body1">{option}</Typography>
                     </Stack>
                   ))}
                 </Stack>
                 <Stack direction="row" alignItems="center" gap={2}>
-                  <Typography variant="h6" fontWeight="bold" color="primary">
+                  <Typography variant="body1" fontWeight="bold" color="primary">
                     Correct Option:
                   </Typography>
                   <Typography variant="body1">
-                    {question.options.find((option) => option.isCorrect)?.text}
+                    {question?.correctOption}
                   </Typography>
                 </Stack>
               </>
@@ -282,7 +469,7 @@ export default function ExamForm() {
           size="large"
           onClick={handleSubmit}
         >
-          Create Exam
+          {id ? "Update Exam" : "Create Exam"}
         </Button>
       </Box>
     </>

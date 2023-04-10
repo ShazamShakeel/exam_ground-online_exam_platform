@@ -8,6 +8,7 @@ function UseOCR() {
   const [image, setImage] = useState("");
   const [text, setText] = useState("");
   const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [showButton, setShowButton] = useState(true);
 
   const handleChange = (event) => {
@@ -18,6 +19,7 @@ function UseOCR() {
 
   const handleClick = () => {
     setShowButton(false);
+    setLoading(true);
     Tesseract.recognize(image, "eng", {
       logger: (obj) => {
         setProgress(obj?.progress);
@@ -26,6 +28,7 @@ function UseOCR() {
       .then((result) => {
         let text = result?.data.text;
         setText(text);
+        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -58,9 +61,14 @@ function UseOCR() {
           <input ref={inputRef} type="file" onChange={handleChange} hidden />
         </Stack>
         <Stack direction="column" justifyContent="center">
-          {progress > 0 && progress < 1 && <CircularProgress />}
+          {loading && <CircularProgress />}
           {showButton && (
-            <Button variant="contained" size="large" onClick={handleClick}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleClick}
+              disabled={!image}
+            >
               Convert
             </Button>
           )}

@@ -54,6 +54,8 @@ const routes = createBrowserRouter(
             <Route element={<TeacherRoute />}>
               <Route path="create/mcq-exam" element={<ExamForm />} />
               <Route path="create/subjective-exam" element={<ExamForm />} />
+              <Route path="edit/mcq-exam/:id" element={<ExamForm />} />
+              <Route path="edit/subjective-exam/:id" element={<ExamForm />} />
               <Route path="checked">
                 <Route path="view">
                   <Route path=":id" element={<ViewCheckedExam />} />
