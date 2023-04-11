@@ -53,7 +53,7 @@ export default function Courses({ courses }) {
         <Carousel responsive={responsive}>
           {courses.map((course) => (
             <Card
-              key={course?.id}
+              key={course?._id ?? course?.id}
               elevation={3}
               sx={{
                 height: { xs: "200px", lg: "250px" },

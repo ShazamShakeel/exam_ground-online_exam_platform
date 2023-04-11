@@ -29,7 +29,7 @@ function StudentExams() {
           let examDate = new Date(exam.date);
           return dayjs(examDate).isSameOrAfter(dayjs(), "day");
         });
-        setExams(exams);
+        setExams(exams.reverse());
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
@@ -62,12 +62,13 @@ function StudentExams() {
             <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center">
               {exams.map((exam) => (
                 <Card
-                  key={exam?.id}
+                  key={exam?._id ?? exam?.id}
                   elevation={3}
                   sx={{
                     height: { xs: "250px", lg: "300px" },
                     width: { lg: "300px", xl: "300px" },
                     m: 1,
+                    position: "relative",
                   }}
                 >
                   <Stack direction="column" gap={1} p={2}>
@@ -96,7 +97,7 @@ function StudentExams() {
                       {exam?.duration}
                     </Typography>
                   </Stack>
-                  <Box textAlign="right" pr={2}>
+                  <Box position="absolute" bottom="0.75rem" right="0.75rem">
                     <Button
                       size="small"
                       variant="contained"

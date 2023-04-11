@@ -113,7 +113,7 @@ export default function Exams({ exams }) {
                   sx={{ mt: 2 }}
                   disabled={
                     user.userRole === "student" &&
-                    dayjs(exam?.date).isAfter(dayjs())
+                    dayjs(exam?.date).isAfter(dayjs(), "day")
                   }
                 >
                   {user.userRole === "student" ? "Attempt Exam" : "Edit Exam"}

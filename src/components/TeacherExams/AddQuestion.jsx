@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import blue from "@mui/material/colors/blue";
 import { useEffect, useRef, useState } from "react";
+import ReactHtmlParser from "react-html-parser";
 import ReactQuill from "react-quill";
 import { useLocation } from "react-router-dom";
 import { editDiagram } from "services/Diagram-Editor";
@@ -87,7 +88,11 @@ export default function AddQuestion({
 
   useEffect(() => {
     if (editQuestion) {
-      setQuestion(editQuestion.question);
+      setQuestion(
+        String(editQuestion.question).includes("&lt;")
+          ? ReactHtmlParser(editQuestion.question).toString()
+          : editQuestion.question
+      );
       if (isMcqExam) {
         setOptions(editQuestion.options);
         setCorrectOption(editQuestion?.correctOption ?? "");

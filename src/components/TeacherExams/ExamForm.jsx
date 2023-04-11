@@ -13,9 +13,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
-import ReactHtmlParser from "react-html-parser";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import decodeHTML from "utils/helpers/decodeHTML";
 import axiosInstance from "utils/httpRequest/axiosInstance";
 import AddQuestion from "./AddQuestion";
 import UseOCR from "./UseOCR";
@@ -380,7 +380,7 @@ export default function ExamForm() {
                 Question:
               </Typography>
               <Box className="question" sx={{ pl: 2 }}>
-                {ReactHtmlParser(question.question)}
+                {decodeHTML(question?.question)}
               </Box>
             </Stack>
             {isSubjectiveExam ? (
