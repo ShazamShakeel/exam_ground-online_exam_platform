@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
+import XLSX from "xlsx";
 import * as Yup from "yup";
 
 function CourseForm() {
@@ -49,6 +50,33 @@ function CourseForm() {
     }
     setCourseStudents([...courseStudents, selectedStudent]);
     setSelectedStudent("");
+  };
+
+  const handleStudentsFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const bulkStudents = [];
+      for (let cell in worksheet) {
+        if (cell[0] === "A") {
+          bulkStudents.push(worksheet[cell].v);
+        }
+      }
+      const newStudents = [];
+      bulkStudents.forEach((student) => {
+        if (courseStudents.find((s) => s.email === student)) return;
+        else {
+          const newStudent = allStudents.find((s) => s.email === student);
+          if (newStudent) newStudents.push(newStudent);
+        }
+      });
+      setCourseStudents([...courseStudents, ...newStudents]);
+    };
+    reader.readAsBinaryString(file);
   };
 
   const onSubmit = (data) => {
@@ -288,6 +316,7 @@ function CourseForm() {
               type="file"
               accept=".xlsx,.xls,.csv"
               hidden
+              onChange={handleStudentsFileUpload}
             />
           </Box>
         </Stack>
