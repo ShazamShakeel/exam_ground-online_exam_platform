@@ -163,7 +163,7 @@ function Results() {
     {
       field: "studentEmail",
       headerName: "Student Email",
-      minWidth: 150,
+      minWidth: 250,
       flex: 0.5,
       hide: user.userRole === "student" ? true : false,
       renderCell: (params) => (
@@ -185,6 +185,8 @@ function Results() {
       headerName: "Total Marks",
       minWidth: 150,
       flex: 0.25,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <Typography variant="body1">{params?.row?.exam?.totalMarks}</Typography>
       ),
@@ -194,6 +196,8 @@ function Results() {
       headerName: "Obtained Marks",
       minWidth: 150,
       flex: 0.25,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <Typography variant="body1">{params?.row?.obtainedMarks}</Typography>
       ),
@@ -203,6 +207,8 @@ function Results() {
       headerName: "Date",
       minWidth: 210,
       flex: 0.5,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <Typography variant="body1">
           {dayjs(params?.row?.createdAt).format("lll")}
@@ -214,6 +220,8 @@ function Results() {
       headerName: "Actions",
       minWidth: 150,
       flex: 0.25,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
         <Stack direction="row" spacing={1}>
           <IconButton
@@ -223,11 +231,6 @@ function Results() {
           >
             <PreviewIcon />
           </IconButton>
-          {/* {user.userRole === "teacher" && (
-            <IconButton variant="contained" size="small">
-              <DeleteIcon />
-            </IconButton>
-          )} */}
         </Stack>
       ),
     },

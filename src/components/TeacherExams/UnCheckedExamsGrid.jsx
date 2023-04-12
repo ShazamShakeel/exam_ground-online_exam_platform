@@ -154,7 +154,7 @@ function UnCheckedExamsGrid() {
       align: "center",
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => navigate(`unchecked/${params.row.id}`)}>
+          <IconButton onClick={() => navigate(`check/${params.row.id}`)}>
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>

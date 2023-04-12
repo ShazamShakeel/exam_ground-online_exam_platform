@@ -5,6 +5,7 @@ import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
 import Announcements from "pages/Announcements";
 import AttemptExam from "pages/AttemptExam";
+import CheckExam from "pages/CheckExam";
 import Course from "pages/Course";
 import CourseForm from "pages/CourseForm";
 import Courses from "pages/Courses";
@@ -56,10 +57,11 @@ const routes = createBrowserRouter(
               <Route path="create/subjective-exam" element={<ExamForm />} />
               <Route path="edit/mcq-exam/:id" element={<ExamForm />} />
               <Route path="edit/subjective-exam/:id" element={<ExamForm />} />
-              <Route path="checked">
-                <Route path="view">
-                  <Route path=":id" element={<ViewCheckedExam />} />
-                </Route>
+              <Route path="check/:id" element={<CheckExam />} />
+            </Route>
+            <Route path="checked">
+              <Route path="view">
+                <Route path=":id" element={<ViewCheckedExam />} />
               </Route>
             </Route>
           </Route>
