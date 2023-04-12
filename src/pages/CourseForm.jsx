@@ -1,5 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  Autocomplete,
   Box,
   Button,
   Divider,
@@ -10,19 +11,23 @@ import {
 import CourseStudentsDataGrid from "components/Courses/CourseStudentsDataGrid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
+import XLSX from "xlsx";
 import * as Yup from "yup";
 
 function CourseForm() {
   const id = useParams()?.id;
   const navigate = useNavigate();
   const studentsFileInputRef = useRef();
+  const user = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
-  const [students, setStudents] = useState([]);
+  const [course, setCourse] = useState({});
+  const [courseStudents, setCourseStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
-  const [studentEmail, setStudentEmail] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   const {
     control,
@@ -39,13 +44,39 @@ function CourseForm() {
   });
 
   const handleAddStudent = () => {
-    const student = allStudents.find((s) => s.email === studentEmail);
-    if (student) {
-      setStudents([...students, student]);
-      setStudentEmail("");
-    } else {
-      toast.error("Student not found");
+    if (courseStudents.find((s) => s.email === selectedStudent.email)) {
+      setSelectedStudent("");
+      return toast.error("Student already added");
     }
+    setCourseStudents([...courseStudents, selectedStudent]);
+    setSelectedStudent("");
+  };
+
+  const handleStudentsFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const bulkStudents = [];
+      for (let cell in worksheet) {
+        if (cell[0] === "A") {
+          bulkStudents.push(worksheet[cell].v);
+        }
+      }
+      const newStudents = [];
+      bulkStudents.forEach((student) => {
+        if (courseStudents.find((s) => s.email === student)) return;
+        else {
+          const newStudent = allStudents.find((s) => s.email === student);
+          if (newStudent) newStudents.push(newStudent);
+        }
+      });
+      setCourseStudents([...courseStudents, ...newStudents]);
+    };
+    reader.readAsBinaryString(file);
   };
 
   const onSubmit = (data) => {
@@ -53,7 +84,7 @@ function CourseForm() {
       axiosInstance
         .post("/course", {
           ...data,
-          students: students.map((student) => student.email),
+          students: courseStudents.map((student) => student.email),
         })
         .then(() => {
           navigate("/courses");
@@ -62,7 +93,7 @@ function CourseForm() {
       axiosInstance
         .patch("/course/" + id, {
           ...data,
-          students: students.map((student) => student.email),
+          students: courseStudents.map((student) => student.email),
         })
         .then(() => {
           navigate("/courses");
@@ -75,13 +106,13 @@ function CourseForm() {
       .get(`/users`, {
         params: {
           role: "student",
-          university: "numl",
+          university: user?.university ?? "",
         },
       })
       .then((res) => {
         setAllStudents(res.data.results);
       });
-  }, []);
+  }, [user?.university]);
 
   useEffect(() => {
     if (id) {
@@ -89,12 +120,13 @@ function CourseForm() {
         .get(`/course?_id=${id}&populate=students`)
         .then((res) => {
           const course = res.data.results[0];
+          setCourse(course);
           reset({
             code: course?.code || "",
             title: course?.title || "",
             description: course?.description || "",
           });
-          setStudents(course?.students || []);
+          setCourseStudents(course?.students || []);
         })
         .finally(() => {
           setLoading(false);
@@ -105,10 +137,10 @@ function CourseForm() {
   }, [id, reset]);
 
   const handleRemoveStudent = useCallback(
-    (student) => {
-      setStudents(students.filter((s) => s._id !== student._id));
+    (id) => {
+      setCourseStudents(courseStudents.filter((s) => s.id !== id));
     },
-    [students]
+    [courseStudents]
   );
 
   return (
@@ -144,7 +176,11 @@ function CourseForm() {
                   size="small"
                   error={!!errors.code}
                   helperText={errors?.code?.message}
-                  sx={{ bgcolor: "white" }}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      bgcolor: "white",
+                    },
+                  }}
                   {...field}
                 />
               )}
@@ -165,7 +201,11 @@ function CourseForm() {
                   fullWidth
                   error={!!errors.title}
                   helperText={errors?.title?.message}
-                  sx={{ bgcolor: "white" }}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      bgcolor: "white",
+                    },
+                  }}
                   {...field}
                 />
               )}
@@ -189,7 +229,11 @@ function CourseForm() {
                   placeholder="Write announcement description here"
                   error={!!errors.description}
                   helperText={errors?.description?.message}
-                  sx={{ bgcolor: "white" }}
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      bgcolor: "white",
+                    },
+                  }}
                   {...field}
                 />
               )}
@@ -203,7 +247,7 @@ function CourseForm() {
               <TextField
                 size="small"
                 fullWidth
-                value={`https://examground.com/course/join/MTUxMjY2NjU2NzUz`}
+                value={`https://examground.com/course/join/${course?.id}`}
                 sx={{ bgcolor: "white" }}
               />
             </Stack>
@@ -224,22 +268,35 @@ function CourseForm() {
           p={2}
           width="100%"
         >
-          <Stack component="form" direction="row" gap={2}>
-            <TextField
-              type="email"
-              label="Add Student"
-              size="small"
-              placeholder="Enter student email to add"
-              value={studentEmail}
-              onChange={(e) => setStudentEmail(e.target.value)}
-              sx={{ minWidth: 180, bgcolor: "white" }}
+          <Stack direction="row" gap={2}>
+            <Autocomplete
+              options={allStudents}
+              sx={{ width: 300 }}
+              value={selectedStudent}
+              getOptionLabel={(option) => option.email ?? ""}
+              isOptionEqualToValue={(option, value) =>
+                option.email === value.email
+              }
+              onChange={(e, option) => {
+                setSelectedStudent(option);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  label="Search Students"
+                  placeholder="Enter student email"
+                  sx={{ minWidth: 180, bgcolor: "white" }}
+                />
+              )}
             />
             <Button
-              type="submit"
+              size="small"
               variant="contained"
               color="primary"
               disableElevation
               onClick={handleAddStudent}
+              disabled={!selectedStudent}
             >
               Add Student
             </Button>
@@ -259,12 +316,13 @@ function CourseForm() {
               type="file"
               accept=".xlsx,.xls,.csv"
               hidden
+              onChange={handleStudentsFileUpload}
             />
           </Box>
         </Stack>
         <CourseStudentsDataGrid
           loading={loading}
-          students={students}
+          students={courseStudents}
           handleRemoveStudent={handleRemoveStudent}
         />
       </Stack>

@@ -54,6 +54,7 @@
     "redux-persist": "^6.0.0",
     "tesseract.js": "^4.0.2",
     "web-vitals": "^3.1.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.2/xlsx-0.19.2.tgz",
     "yup": "^0.32.11"
   },
   "devDependencies": {

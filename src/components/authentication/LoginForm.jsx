@@ -15,11 +15,13 @@ import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { login } from "store/slices/authSlice";
+import handleFaceioError from "utils/helpers/faceioErrorHandler";
 import * as Yup from "yup";
 
 export default function LoginForm() {
-  const faceio = useRef(null);
+  const faceioRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
@@ -30,7 +32,7 @@ export default function LoginForm() {
     email: Yup.string()
       .email("Please provide your university email")
       .matches(
-        /^[a-zA-Z0-9_.+-]+@(numl|bahria|fast)\.edu.pk$/,
+        /^[a-zA-Z0-9_.+-]+@(numl|numls|bahria|fast)\.edu.pk$/,
         "University email is incorrect"
       )
       .required("Email is required"),
@@ -59,22 +61,21 @@ export default function LoginForm() {
   };
 
   const handleLoginWithFaceId = () => {
-    faceio.current
+    faceioRef.current
       .authenticate()
       .then((res) => {
         dispatch(login({ facialId: res.facialId }))
           .unwrap()
           .then(() => navigate("/dashboard"));
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        toast.error(handleFaceioError(err));
+      });
   };
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
-    faceio.current = new faceIO(process.env.REACT_APP_FACEIO_PUBLIC_KEY);
-    return () => {
-      faceio.current = null;
-    };
+    faceioRef.current = new faceIO(process.env.REACT_APP_FACEIO_PUBLIC_KEY);
   }, []);
 
   return (
@@ -160,11 +161,6 @@ export default function LoginForm() {
                   />
                 )}
               />
-              {/* <Link to="/forgot-password">
-                <Typography variant="body2" textAlign="right" color="primary">
-                  Forgot password?
-                </Typography>
-              </Link> */}
               {error && (
                 <Typography variant="body2" color="error">
                   {error}
@@ -175,8 +171,9 @@ export default function LoginForm() {
                 variant="contained"
                 color="primary"
                 fullWidth
+                disabled={loading}
               >
-                Login
+                {loading ? "Loading..." : "Login"}
               </Button>
               <Divider
                 light
@@ -190,9 +187,10 @@ export default function LoginForm() {
                 color="primary"
                 fullWidth
                 endIcon={<FaceIcon />}
+                disabled={loading}
                 onClick={handleLoginWithFaceId}
               >
-                Login with Face ID
+                {loading ? "Loading..." : "Login with Face ID"}
               </Button>
             </Stack>
           </form>

@@ -1,31 +1,28 @@
 import { Button, CircularProgress, Stack, Typography } from "@mui/material";
 import scanImage from "assets/images/ScanImage.png";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import Tesseract from "tesseract.js";
 
 function UseOCR() {
   const inputRef = useRef();
   const [image, setImage] = useState("");
   const [text, setText] = useState("");
-  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [showButton, setShowButton] = useState(true);
 
   const handleChange = (event) => {
     setImage(URL.createObjectURL(event.target.files[0]));
-    setProgress(0);
     setShowButton(true);
   };
 
   const handleClick = () => {
     setShowButton(false);
-    Tesseract.recognize(image, "eng", {
-      logger: (obj) => {
-        setProgress(obj?.progress);
-      },
-    })
+    setLoading(true);
+    Tesseract.recognize(image, "eng")
       .then((result) => {
         let text = result?.data.text;
         setText(text);
+        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -58,9 +55,14 @@ function UseOCR() {
           <input ref={inputRef} type="file" onChange={handleChange} hidden />
         </Stack>
         <Stack direction="column" justifyContent="center">
-          {progress > 0 && progress < 1 && <CircularProgress />}
+          {loading && <CircularProgress />}
           {showButton && (
-            <Button variant="contained" size="large" onClick={handleClick}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleClick}
+              disabled={!image}
+            >
               Convert
             </Button>
           )}
@@ -83,4 +85,4 @@ function UseOCR() {
   );
 }
 
-export default UseOCR;
+export default memo(UseOCR);

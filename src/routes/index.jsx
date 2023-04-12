@@ -4,6 +4,7 @@ import Layout from "layout/Layout";
 import NotFound from "pages/404";
 import AnnouncementForm from "pages/AnnouncementForm";
 import Announcements from "pages/Announcements";
+import AttemptExam from "pages/AttemptExam";
 import Course from "pages/Course";
 import CourseForm from "pages/CourseForm";
 import Courses from "pages/Courses";
@@ -11,6 +12,7 @@ import Dashboard from "pages/Dashboard";
 import DateSheetForm from "pages/DateSheetForm";
 import DateSheets from "pages/DateSheets";
 import Exams from "pages/Exams";
+import JoinCourseByLink from "pages/JoinCourseByLink";
 import LandingPage from "pages/LandingPage";
 import Login from "pages/Login";
 import Profile from "pages/Profile";
@@ -40,6 +42,7 @@ const routes = createBrowserRouter(
           <Route path="courses">
             <Route index element={<Courses />} />
             <Route path=":id" element={<Course />} />
+            <Route path="join/:id" element={<JoinCourseByLink />} />
             <Route element={<TeacherRoute />}>
               <Route path="create" element={<CourseForm />} />
               <Route path="edit/:id" element={<CourseForm />} />
@@ -51,6 +54,8 @@ const routes = createBrowserRouter(
             <Route element={<TeacherRoute />}>
               <Route path="create/mcq-exam" element={<ExamForm />} />
               <Route path="create/subjective-exam" element={<ExamForm />} />
+              <Route path="edit/mcq-exam/:id" element={<ExamForm />} />
+              <Route path="edit/subjective-exam/:id" element={<ExamForm />} />
               <Route path="checked">
                 <Route path="view">
                   <Route path=":id" element={<ViewCheckedExam />} />
@@ -86,6 +91,8 @@ const routes = createBrowserRouter(
 
           <Route path="profile" element={<Profile />} />
         </Route>
+
+        <Route path="/exams/attempt/:id" element={<AttemptExam />} />
 
         <Route path="register-face" element={<RegisterFace />} />
       </Route>

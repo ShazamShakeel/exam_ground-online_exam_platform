@@ -1,119 +1,10 @@
-import { Box, Card, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import Carousel from "react-multi-carousel";
+import { useNavigate } from "react-router-dom";
 
-export default function UncheckedExams() {
-  const uncheckedExams = [
-    {
-      id: 1,
-      title: "Midterm Exam",
-      courseCode: "MATH101",
-      courseName: "Calculus",
-      studentName: "demo user",
-      examMarks: 80,
-      duration: "2 hours",
-      date: "2022-04-15",
-      type: "subjective",
-    },
-    {
-      id: 2,
-      title: "Final Exam",
-      courseCode: "ENG101",
-      courseName: "English Literature",
-      studentName: "demo user",
-      examMarks: 70,
-      duration: "3 hours",
-      date: "2022-06-10",
-      type: "mcq",
-    },
-    {
-      id: 3,
-      title: "Quiz 1",
-      courseCode: "CSC101",
-      courseName: "Programming Fundamentals",
-      studentName: "demo user",
-      examMarks: 95,
-      duration: "1 hour",
-      date: "2022-02-28",
-      type: "mcq",
-    },
-    {
-      id: 4,
-      title: "Term Paper",
-      courseCode: "BIO101",
-      courseName: "Biology",
-      studentName: "demo user",
-      examMarks: 85,
-      duration: "N/A",
-      date: "2022-05-20",
-      type: "subjective",
-    },
-    {
-      id: 5,
-      title: "Midterm Exam",
-      courseCode: "PHYS101",
-      courseName: "Physics",
-      studentName: "demo user",
-      examMarks: 75,
-      duration: "2 hours",
-      date: "2022-03-25",
-      type: "mcq",
-    },
-    {
-      id: 6,
-      title: "Final Exam",
-      courseCode: "HIS101",
-      courseName: "World History",
-      studentName: "demo user",
-      examMarks: 80,
-      duration: "3 hours",
-      date: "2022-06-20",
-      type: "subjective",
-    },
-    {
-      id: 7,
-      title: "Quiz 2",
-      courseCode: "CSC101",
-      courseName: "Programming Fundamentals",
-      studentName: "demo user",
-      examMarks: 90,
-      duration: "1 hour",
-      date: "2022-04-15",
-      type: "subjective",
-    },
-    {
-      id: 8,
-      title: "Midterm Exam",
-      courseCode: "CHEM101",
-      courseName: "Chemistry",
-      studentName: "demo user",
-      examMarks: 70,
-      duration: "2 hours",
-      date: "2022-03-01",
-      type: "mcq",
-    },
-    {
-      id: 9,
-      title: "Final Exam",
-      courseCode: "PSY101",
-      courseName: "Psychology",
-      studentName: "demo user",
-      examMarks: 85,
-      duration: "3 hours",
-      date: "2022-06-30",
-      type: "mcq",
-    },
-    {
-      id: 10,
-      title: "Midterm Exam",
-      courseCode: "ECO101",
-      courseName: "Economics",
-      studentName: "demo user",
-      examMarks: 75,
-      duration: "2 hours",
-      date: "2022-06-30",
-      type: "mcq",
-    },
-  ];
+export default function UncheckedExams({ uncheckedExams }) {
+  const navigate = useNavigate();
 
   const responsive = {
     xxxl: {
@@ -166,38 +57,49 @@ export default function UncheckedExams() {
               key={exam?.id}
               elevation={3}
               sx={{
-                height: { xs: "200px", lg: "250px" },
+                height: { xs: "250px", lg: "275px" },
                 width: { lg: "300px", xl: "300px" },
                 p: 2,
                 m: 1,
+                position: "relative",
               }}
             >
               <Stack direction="column" gap={1}>
                 <Typography variant="subtitle1" textAlign="center">
                   <strong>Date: </strong>
-                  {exam?.date}
+                  {dayjs(exam?.exam?.date).format("LL")}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Title: </strong>
-                  {exam?.title ?? ""}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Course Code: </strong>
-                  {exam?.courseCode}
+                  {exam?.exam?.title ?? ""}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Course: </strong>
-                  {exam?.courseName}
+                  {`${exam?.exam?.course?.code}: ${exam?.exam?.course?.title}`}
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="body1">
                   <strong>Student: </strong>
-                  {exam?.studentName}
+                  {exam?.student?.name}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Total Marks: </strong>
+                  {exam?.exam?.totalMarks}
                 </Typography>
                 <Typography variant="subtitle1">
                   <strong>Duration: </strong>
-                  {exam?.duration}
+                  {exam?.exam?.duration} minutes
                 </Typography>
               </Stack>
+              <Box position="absolute" bottom="0.75rem" right="0.75rem">
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => navigate(`/exams/unchecked/${exam.id}`)}
+                  sx={{ mt: 2 }}
+                >
+                  Check Exam
+                </Button>
+              </Box>
             </Card>
           ))}
         </Carousel>

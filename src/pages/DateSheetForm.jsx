@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Autocomplete,
   Box,
@@ -10,64 +9,94 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 
 function DateSheetForm() {
   const navigate = useNavigate();
   const id = useParams()?.id;
-  const datesheet = null;
-  const courses = [
-    {
-      id: 1,
-      code: "COMP101",
-      name: "Introduction to Computer Science",
-      description:
-        "An introduction to computer programming and problem solving.",
-      students: 50,
-      exams: 2,
-    },
-    {
-      id: 2,
-      code: "MATH201",
-      name: "Calculus I",
-      description:
-        "Limits, derivatives, and integrals of algebraic, trigonometric, exponential, and logarithmic functions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 3,
-      code: "PSYC101",
-      name: "Introduction to Psychology",
-      description:
-        "An overview of the scientific study of behavior and mental processes.",
-      students: 60,
-      exams: 2,
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState(null);
+  const [courseError, setCourseError] = useState("");
+  const [description, setDescription] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [date, setDate] = useState(null);
+  const [dateError, setDateError] = useState("");
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: {
-      examTitle: datesheet?.examTitle || "",
-      course: datesheet?.course || null,
-      date: datesheet?.date || null,
-    },
-  });
-
-  const onSubmit = (data) => {
-    console.log("onSubmit", data);
-    navigate("/datesheets");
+  const getCourses = () => {
+    axiosInstance
+      .get("/course")
+      .then((res) => {
+        setCourses(res?.data.results);
+      })
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ??
+            "Something went wrong while fetching courses"
+        );
+      });
   };
+
+  const handleSubmit = () => {
+    if (!course) return setCourseError("Course is required");
+    else setCourseError("");
+
+    if (!description) return setDescriptionError("Description is required");
+    else if (description.length < 10)
+      return setDescriptionError("Description is too short");
+    else setDescriptionError("");
+
+    if (!date) return setDateError("Date is required");
+    else setDateError("");
+
+    if (id) {
+      axiosInstance
+        .patch(`/datesheet/${id}`, {
+          course: course.id,
+          description,
+          date,
+        })
+        .then(() => {
+          toast.success("Date Sheet updated successfully");
+          navigate("/datesheets");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message ?? "Something went wrong");
+        });
+    } else {
+      axiosInstance
+        .post("/datesheet", {
+          course: course.id,
+          description,
+          date,
+        })
+        .then(() => {
+          toast.success("Date Sheet added successfully");
+          navigate("/datesheets");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message ?? "Something went wrong");
+        });
+    }
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  useEffect(() => {
+    id &&
+      axiosInstance.get(`/datesheet/${id}`).then((res) => {
+        setCourse(res?.data?.course);
+        setDescription(res?.data?.description);
+        setDate(res?.data?.date);
+      });
+  }, [id]);
 
   return (
     <>
@@ -90,92 +119,75 @@ function DateSheetForm() {
             p: 2,
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack direction="column" gap={2}>
-              <Box>
-                <Typography variant="h6" color="primary" mb={1}>
-                  Exam Title
-                </Typography>
-                <Controller
-                  name="examTitle"
-                  control={control}
-                  render={({ field }) => (
+          <Stack direction="column" gap={2}>
+            <Box>
+              <Typography variant="h6" color="primary.main" mb={1}>
+                Course
+              </Typography>
+              <Autocomplete
+                value={course}
+                options={courses}
+                getOptionLabel={(option) => option.title}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(_, value) => setCourse(value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Course"
+                    size="small"
+                    error={!!courseError}
+                    helperText={courseError}
+                  />
+                )}
+              />
+            </Box>
+            <Box>
+              <Typography variant="h6" color="primary" mb={1}>
+                Description
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                name="description"
+                label="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                error={!!descriptionError}
+                helperText={descriptionError}
+              />
+            </Box>
+            <Box>
+              <Typography variant="h6" color="primary" mb={1}>
+                Exam Date
+              </Typography>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Date"
+                  value={date}
+                  onChange={(value) => {
+                    setDate(value);
+                  }}
+                  renderInput={(params) => (
                     <TextField
-                      label="Exam Title"
-                      size="small"
                       fullWidth
-                      error={!!errors.examTitle}
-                      helperText={errors?.examTitle?.message}
-                      {...field}
+                      {...params}
+                      error={!!dateError}
+                      helperText={dateError}
                     />
                   )}
                 />
-              </Box>
-              <Box>
-                <Typography variant="h6" color="primary.main" mb={1}>
-                  Course
-                </Typography>
-                <Controller
-                  name="course"
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <Autocomplete
-                      value={value}
-                      options={courses}
-                      getOptionLabel={(option) => option.name}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      onChange={(_, data) => onChange(data)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Course"
-                          size="small"
-                          error={!!errors.course}
-                          helperText={errors?.course?.message}
-                        />
-                      )}
-                    />
-                  )}
-                />
-              </Box>
-              <Box>
-                <Typography variant="h6" color="primary" mb={1}>
-                  Exam Date
-                </Typography>
-                <Controller
-                  name="date"
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <MobileDateTimePicker
-                        label="Date"
-                        value={value}
-                        onChange={(value) => {
-                          onChange(value);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            fullWidth
-                            {...params}
-                            placeholder="MM/DD/YYYY HH:MM:SS AM"
-                            error={!!errors.date}
-                            helperText={errors?.date?.message}
-                          />
-                        )}
-                      />
-                    </LocalizationProvider>
-                  )}
-                />
-              </Box>
-              <Box textAlign="center" mt={2}>
-                <Button type="submit" variant="contained" color="primary">
-                  {id ? "Update Date Sheet" : "Add Date Sheet"}
-                </Button>
-              </Box>
-            </Stack>
-          </form>
+              </LocalizationProvider>
+            </Box>
+            <Box textAlign="center" mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+              >
+                {id ? "Update Date Sheet" : "Add Date Sheet"}
+              </Button>
+            </Box>
+          </Stack>
         </Paper>
       </Container>
     </>
@@ -183,15 +195,3 @@ function DateSheetForm() {
 }
 
 export default DateSheetForm;
-
-const validationSchema = Yup.object().shape({
-  examTitle: Yup.string()
-    .min(10, "Title should be at least 10 characters long")
-    .max(100, "Title is too long")
-    .required("Title is required"),
-  course: Yup.object().required("Course is required").nullable(),
-  date: Yup.date()
-    .min(new Date(), "Start date must be greater than current date.")
-    .required("Date is required")
-    .nullable(),
-});

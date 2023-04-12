@@ -1,96 +1,8 @@
 import { Box, Card, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import Carousel from "react-multi-carousel";
 
-export default function Announcements() {
-  const announcements = [
-    {
-      id: 1,
-      code: "COMP101",
-      name: "Introduction to Computer Science",
-      description:
-        "An introduction to computer programming and problem solving.",
-      students: 50,
-      exams: 2,
-    },
-    {
-      id: 2,
-      code: "MATH201",
-      name: "Calculus I",
-      description:
-        "Limits, derivatives, and integrals of algebraic, trigonometric, exponential, and logarithmic functions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 3,
-      code: "PSYC101",
-      name: "Introduction to Psychology",
-      description:
-        "An overview of the scientific study of behavior and mental processes.",
-      students: 60,
-      exams: 2,
-    },
-    {
-      id: 4,
-      code: "PHIL202",
-      name: "Ethics",
-      description: "The study of moral values and principles.",
-      students: 30,
-      exams: 2,
-    },
-    {
-      id: 5,
-      code: "ENGL101",
-      name: "Composition I",
-      description:
-        "Fundamentals of writing, including grammar, mechanics, and organization.",
-      students: 45,
-      exams: 3,
-    },
-    {
-      id: 6,
-      code: "HIST201",
-      name: "American History to 1865",
-      description:
-        "The history of the United States from pre-Columbian times to the end of the Civil War.",
-      students: 35,
-      exams: 2,
-    },
-    {
-      id: 7,
-      code: "BIOL101",
-      name: "Introduction to Biology",
-      description:
-        "The study of living organisms and their interactions with the environment.",
-      students: 55,
-      exams: 2,
-    },
-    {
-      id: 8,
-      code: "SPAN101",
-      name: "Beginning Spanish I",
-      description: "An introduction to the Spanish language and culture.",
-      students: 20,
-      exams: 4,
-    },
-    {
-      id: 9,
-      code: "PHYS101",
-      name: "Introduction to Physics",
-      description: "The study of matter and energy and their interactions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 10,
-      code: "ARTS101",
-      name: "Art Appreciation",
-      description: "An introduction to the history and appreciation of art.",
-      students: 25,
-      exams: 1,
-    },
-  ];
-
+export default function Announcements({ announcements }) {
   const responsive = {
     xxxl: {
       breakpoint: { max: 4000, min: 1920 },
@@ -139,25 +51,22 @@ export default function Announcements() {
         <Carousel responsive={responsive}>
           {announcements.map((announcement) => (
             <Card
-              key={announcement?.id}
+              key={announcement?._id}
               elevation={3}
               sx={{
-                height: { xs: "200px", lg: "250px" },
+                height: { xs: "175px", lg: "200px" },
                 width: { lg: "300px", xl: "300px" },
                 p: 2,
                 m: 1,
               }}
             >
               <Stack direction="column" gap={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  {announcement?.code}
+                <Typography variant="subtitle1" textAlign="center">
+                  <strong>Date: </strong>
+                  {dayjs(announcement?.date).format("LL")}
                 </Typography>
                 <Typography variant="body1" fontWeight="bold">
-                  {announcement?.name}
+                  {announcement?.title}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -173,13 +82,9 @@ export default function Announcements() {
                 >
                   {announcement?.description}
                 </Typography>
-                <Typography variant="subtitle1">
-                  <strong>Students: </strong>
-                  {announcement?.students}
-                </Typography>
-                <Typography variant="subtitle1">
-                  <strong>Exams: </strong>
-                  {announcement?.exams}
+                <Typography variant="body2" color="text.primary">
+                  <strong>Course: </strong>
+                  {`${announcement?.course?.title}`}
                 </Typography>
               </Stack>
             </Card>

@@ -1,5 +1,5 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  Autocomplete,
   Box,
   Button,
   Container,
@@ -9,33 +9,92 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 
 function AnnouncementForm() {
   const navigate = useNavigate();
   const id = useParams()?.id;
-  const announcement = null;
-  // const courses = [];
+  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState(null);
+  const [courseError, setCourseError] = useState("");
+  const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [description, setDescription] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: {
-      title: announcement?.title || "",
-      description: announcement?.description || "",
-      courseId: announcement?.courseId || "",
-    },
-  });
-
-  const onSubmit = (data) => {
-    console.log("onSubmit", data);
-    navigate("/announcements");
+  const getCourses = () => {
+    axiosInstance
+      .get("/course")
+      .then((res) => {
+        setCourses(res?.data.results);
+      })
+      .catch((err) => {
+        toast.error(
+          err?.response?.data?.message ??
+            "Something went wrong while fetching courses"
+        );
+      });
   };
+
+  const handleSubmit = () => {
+    if (!course) return setCourseError("Course is required");
+    else setCourseError("");
+
+    if (!title) return setTitleError("Title is required");
+    else if (title.length < 5) return setTitleError("Title is too short");
+    else setTitleError("");
+
+    if (!description) return setDescriptionError("Description is required");
+    else if (description.length < 10)
+      return setDescriptionError("Description is too short");
+    else setDescriptionError("");
+
+    if (id) {
+      axiosInstance
+        .patch(`/announcement/${id}`, {
+          course: course.id,
+          title,
+          description,
+        })
+        .then(() => {
+          toast.success("Announcement updated successfully");
+          navigate("/announcements");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message ?? "Something went wrong");
+        });
+    } else {
+      axiosInstance
+        .post("/announcement", {
+          course: course.id,
+          title,
+          description,
+        })
+        .then(() => {
+          toast.success("Announcement created successfully");
+          navigate("/announcements");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message ?? "Something went wrong");
+        });
+    }
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  useEffect(() => {
+    id &&
+      axiosInstance.get(`/announcement/${id}`).then((res) => {
+        setCourse(res?.data?.course);
+        setTitle(res?.data?.title);
+        setDescription(res?.data?.description);
+      });
+  }, [id]);
 
   return (
     <>
@@ -58,56 +117,68 @@ function AnnouncementForm() {
             p: 2,
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack direction="column" gap={2}>
-              <Box>
-                <Typography variant="h6" color="primary" mb={1}>
-                  Title
-                </Typography>
-                <Controller
-                  name="title"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Title"
-                      size="small"
-                      fullWidth
-                      error={!!errors.title}
-                      helperText={errors?.title?.message}
-                      {...field}
-                    />
-                  )}
-                />
-              </Box>
-              <Box>
-                <Typography variant="h6" color="primary.main" mb={1}>
-                  Description
-                </Typography>
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Description"
-                      size="small"
-                      fullWidth
-                      multiline
-                      rows={4}
-                      placeholder="Write announcement description here"
-                      error={!!errors.description}
-                      helperText={errors?.description?.message}
-                      {...field}
-                    />
-                  )}
-                />
-              </Box>
-              <Box textAlign="center" mt={2}>
-                <Button type="submit" variant="contained" color="primary">
-                  Add announcement
-                </Button>
-              </Box>
-            </Stack>
-          </form>
+          <Stack direction="column" gap={2}>
+            <Box>
+              <Typography variant="h6" color="primary.main" mb={1}>
+                Course
+              </Typography>
+              <Autocomplete
+                value={course}
+                options={courses}
+                getOptionLabel={(option) => option.title}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(_, value) => setCourse(value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Course"
+                    size="small"
+                    error={!!courseError}
+                    helperText={courseError}
+                  />
+                )}
+              />
+            </Box>
+            <Box>
+              <Typography variant="h6" color="primary" mb={1}>
+                Title
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                name="title"
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                error={!!titleError}
+                helperText={titleError}
+              />
+            </Box>
+            <Box>
+              <Typography variant="h6" color="primary" mb={1}>
+                Description
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                name="description"
+                label="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                error={!!descriptionError}
+                helperText={descriptionError}
+              />
+            </Box>
+            <Box textAlign="center" mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+              >
+                {id ? "Update Announcement" : "Create Announcement"}
+              </Button>
+            </Box>
+          </Stack>
         </Paper>
       </Container>
     </>
@@ -115,15 +186,3 @@ function AnnouncementForm() {
 }
 
 export default AnnouncementForm;
-
-const validationSchema = Yup.object().shape({
-  title: Yup.string()
-    .min(10, "Title should be at least 10 characters long")
-    .max(100, "Title is too long")
-    .required("Title is required"),
-  description: Yup.string()
-    .min(10, "Description should be at least 10 characters long")
-    .max(1000, "Description is too long")
-    .required("Description is required"),
-  courseId: Yup.string(),
-});

@@ -1,34 +1,8 @@
-import { Pagination, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
-import { useCallback } from "react";
-import { useParams } from "react-router-dom";
 
-const CustomDataGrid = ({
-  rows,
-  columns,
-  loading,
-  totalPages,
-  handlePagination,
-}) => {
-  const params = useParams();
-  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
-
-  const customPagination = useCallback(() => {
-    const _page = params.page ? parseInt(params.page) : 1;
-    window.scrollTo(0, 0);
-    return (
-      <Pagination
-        sx={{ marginY: 4 }}
-        size={isSmall ? "small" : "large"}
-        count={totalPages}
-        page={_page}
-        disabled={totalPages === 1}
-        onChange={handlePagination}
-      />
-    );
-  }, [params.page, isSmall, totalPages, handlePagination]);
-
+const CustomDataGrid = ({ rows, columns, loading }) => {
   return (
     <Box sx={containerStyles}>
       <DataGrid
@@ -38,17 +12,29 @@ const CustomDataGrid = ({
         loading={loading}
         autoHeight
         disableSelectionOnClick
-        checkboxSelection
         getRowHeight={() => "auto"}
         getRowSpacing={(params) => ({
-          top: params.isFirstVisible ? 0 : 10,
-          bottom: params.isLastVisible ? 0 : 10,
+          top: params.isFirstVisible ? 0 : 5,
+          bottom: params.isLastVisible ? 0 : 5,
         })}
         isCellEditable={() => false}
-        getRowId={(row) => row.id}
+        getRowId={(row) => row._id ?? row.id}
+        pageSize={10}
         pagination
-        rowsPerPageOptions={[10, 15, 20]}
-        components={{ Pagination: customPagination }}
+        components={{
+          NoRowsOverlay: () => (
+            <Box
+              height="100%"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Typography variant="h6" lineHeight={1} color="text.secondary">
+                No results found
+              </Typography>
+            </Box>
+          ),
+        }}
       />
     </Box>
   );
@@ -68,7 +54,7 @@ const containerStyles = {
   },
   "& .MuiDataGrid-row": {
     backgroundColor: "#fff",
-    py: 1,
+    py: 1.5,
     boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
   },
   "& .MuiDataGrid-row:hover": {

@@ -4,104 +4,47 @@ import EditIcon from "@mui/icons-material/Edit";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { Button, IconButton, Stack, Typography } from "@mui/material";
 import CustomDataGrid from "components/CustomDataGrid";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 
 export default function CoursesDataGrid() {
   const navigate = useNavigate();
-  const loading = false;
-  const totalPages = 1;
-  const courses = [
-    {
-      id: 1,
-      code: "COMP101",
-      name: "Introduction to Computer Science",
-      description:
-        "An introduction to computer programming and problem solving.",
-      students: 50,
-      exams: 2,
-    },
-    {
-      id: 2,
-      code: "MATH201",
-      name: "Calculus I",
-      description:
-        "Limits, derivatives, and integrals of algebraic, trigonometric, exponential, and logarithmic functions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 3,
-      code: "PSYC101",
-      name: "Introduction to Psychology",
-      description:
-        "An overview of the scientific study of behavior and mental processes.",
-      students: 60,
-      exams: 2,
-    },
-    {
-      id: 4,
-      code: "PHIL202",
-      name: "Ethics",
-      description: "The study of moral values and principles.",
-      students: 30,
-      exams: 2,
-    },
-    {
-      id: 5,
-      code: "ENGL101",
-      name: "Composition I",
-      description:
-        "Fundamentals of writing, including grammar, mechanics, and organization.",
-      students: 45,
-      exams: 3,
-    },
-    {
-      id: 6,
-      code: "HIST201",
-      name: "American History to 1865",
-      description:
-        "The history of the United States from pre-Columbian times to the end of the Civil War.",
-      students: 35,
-      exams: 2,
-    },
-    {
-      id: 7,
-      code: "BIOL101",
-      name: "Introduction to Biology",
-      description:
-        "The study of living organisms and their interactions with the environment.",
-      students: 55,
-      exams: 2,
-    },
-    {
-      id: 8,
-      code: "SPAN101",
-      name: "Beginning Spanish I",
-      description: "An introduction to the Spanish language and culture.",
-      students: 20,
-      exams: 4,
-    },
-    {
-      id: 9,
-      code: "PHYS101",
-      name: "Introduction to Physics",
-      description: "The study of matter and energy and their interactions.",
-      students: 40,
-      exams: 3,
-    },
-    {
-      id: 10,
-      code: "ARTS101",
-      name: "Art Appreciation",
-      description: "An introduction to the history and appreciation of art.",
-      students: 25,
-      exams: 1,
-    },
-  ];
+  const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const handlePagination = (_, page) => {
-    console.log("page", page);
+  const getCourses = useCallback(() => {
+    setLoading(true);
+    axiosInstance
+      .get(`course`, {
+        params: {
+          teacher: localStorage.getItem("userId"),
+        },
+      })
+      .then((response) => {
+        setCourses(response.data.results ?? []);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const handleDelete = (id) => {
+    axiosInstance.delete(`course/${id}`).then(() => {
+      toast.success("Course deleted successfully");
+      getCourses();
+    });
   };
+
+  useEffect(() => {
+    getCourses();
+  }, [getCourses]);
 
   const columns = [
     {
@@ -114,12 +57,12 @@ export default function CoursesDataGrid() {
       ),
     },
     {
-      field: "name",
-      headerName: "Course Name",
+      field: "title",
+      headerName: "Course Title",
       minWidth: 200,
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
-        <Typography variant="body1">{params?.row?.name}</Typography>
+        <Typography variant="body1">{params?.row?.title}</Typography>
       ),
     },
     {
@@ -152,20 +95,20 @@ export default function CoursesDataGrid() {
       headerAlign: "center",
       align: "center",
       renderCell: (params) => (
-        <Typography variant="body1">{params?.row?.students}</Typography>
+        <Typography variant="body1">{params?.row?.students.length}</Typography>
       ),
     },
-    {
-      field: "exams",
-      headerName: "Exams",
-      minWidth: 75,
-      flex: 0.25,
-      headerAlign: "center",
-      align: "center",
-      renderCell: (params) => (
-        <Typography variant="body1">{params?.row?.exams}</Typography>
-      ),
-    },
+    // {
+    //   field: "exams",
+    //   headerName: "Exams",
+    //   minWidth: 75,
+    //   flex: 0.25,
+    //   headerAlign: "center",
+    //   align: "center",
+    //   renderCell: (params) => (
+    //     <Typography variant="body1">{params?.row?.exams}</Typography>
+    //   ),
+    // },
     {
       field: "actions",
       headerName: "Actions",
@@ -189,7 +132,11 @@ export default function CoursesDataGrid() {
           >
             <PreviewIcon />
           </IconButton>
-          <IconButton variant="contained" size="small">
+          <IconButton
+            variant="contained"
+            size="small"
+            onClick={() => handleDelete(params?.row?.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </Stack>
@@ -213,7 +160,6 @@ export default function CoursesDataGrid() {
         rows={courses}
         columns={columns}
         totalPages={totalPages}
-        handlePagination={handlePagination}
       />
     </>
   );
