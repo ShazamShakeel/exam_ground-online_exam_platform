@@ -169,10 +169,9 @@ function CheckedExamsGrid() {
           <IconButton onClick={() => navigate(`checked/view/${params.row.id}`)}>
             <PreviewIcon />
           </IconButton>
-          {params.row.type === "subjective" && (
-            <IconButton
-              onClick={() => navigate(`checked/edit/${params.row.id}`)}
-            >
+          {console.log(params.row.type)}
+          {params.row?.exam?.type === "subjective" && (
+            <IconButton onClick={() => navigate(`check/${params.row.id}`)}>
               <EditIcon />
             </IconButton>
           )}

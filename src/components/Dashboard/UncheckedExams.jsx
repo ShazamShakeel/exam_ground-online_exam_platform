@@ -94,7 +94,7 @@ export default function UncheckedExams({ uncheckedExams }) {
                 <Button
                   size="small"
                   variant="contained"
-                  onClick={() => navigate(`/exams/unchecked/${exam.id}`)}
+                  onClick={() => navigate(`/exams/check/${exam.id}`)}
                   sx={{ mt: 2 }}
                 >
                   Check Exam

@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
@@ -18,9 +19,11 @@ import axiosInstance from "utils/httpRequest/axiosInstance";
 
 export default function ViewCheckedExam() {
   const id = useParams()?.id ?? "";
+  const userRole = useSelector((state) => state.auth?.userRole);
   const componentRef = useRef();
   const uploadPdfRef = useRef();
   const [loading, setLoading] = useState(true);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [exam, setExam] = useState({});
   const [isMcqExam, setIsMcqExam] = useState(false);
 
@@ -40,16 +43,20 @@ export default function ViewCheckedExam() {
   }, [id]);
 
   const handleUploadPdf = (pdf) => {
+    setUploadLoading(true);
     const formData = new FormData();
     formData.append("file", pdf);
     axiosInstance
       .post("/answer/" + id + "/upload-pdf", formData)
-      .then(() => {
+      .then((res) => {
         toast.success("Exam PDF uploaded successfully");
-        getExam();
+        setExam({ ...exam, examPdf: res.data.examPdf });
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
+      })
+      .finally(() => {
+        setUploadLoading(false);
       });
   };
 
@@ -78,21 +85,26 @@ export default function ViewCheckedExam() {
     <Stack direction="column">
       <Stack direction="row" justifyContent="space-between" mx={2}>
         <Box>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => uploadPdfRef.current.click()}
-          >
-            Upload Exam PDF
-          </Button>
-          <input
-            type="file"
-            ref={uploadPdfRef}
-            style={{ display: "none" }}
-            onChange={(e) => {
-              handleUploadPdf(e.target.files[0]);
-            }}
-          />
+          {userRole === "teacher" && (
+            <>
+              <Button
+                size="large"
+                variant="contained"
+                onClick={() => uploadPdfRef.current.click()}
+                sx={{ mr: 2 }}
+              >
+                {uploadLoading ? "Uploading" : "Upload Exam PDF"}
+              </Button>
+              <input
+                type="file"
+                ref={uploadPdfRef}
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  handleUploadPdf(e.target.files[0]);
+                }}
+              />
+            </>
+          )}
           {exam?.examPdf && (
             <Button
               size="large"
@@ -101,21 +113,22 @@ export default function ViewCheckedExam() {
               href={exam?.examPdf}
               target="_blank"
               download
-              sx={{ ml: 2 }}
             >
               Download Uploaded PDF
             </Button>
           )}
         </Box>
         <Box minWidth={200}>
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={generatePDF}
-          >
-            Generate Exam PDF
-          </Button>
+          {userRole === "teacher" && (
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={generatePDF}
+            >
+              Generate Exam PDF
+            </Button>
+          )}
         </Box>
       </Stack>
       <Paper sx={{ m: 2 }}>

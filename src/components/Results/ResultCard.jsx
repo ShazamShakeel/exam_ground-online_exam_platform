@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CircularProgress,
   Container,
   Divider,
@@ -10,21 +11,12 @@ import {
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
 
 function ResultCard() {
-  // const result = {
-  //   id: 1,
-  //   examTitle: "Mathematics Test",
-  //   studentName: "John Doe",
-  //   courseCode: "MATH101",
-  //   courseName: "Introduction to Mathematics",
-  //   createdAt: new Date("2022-02-10T10:30:00"),
-  //   obtainedMarks: 85,
-  //   totalMarks: 100,
-  // };
+  const navigate = useNavigate();
   const examId = useParams().id;
   const user = useSelector((state) => state?.auth);
 
@@ -112,6 +104,16 @@ function ResultCard() {
                   {dayjs(result.createdAt).format("LLL")}
                 </Typography>
               </Stack>
+              <Box textAlign="center">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => navigate(`/exams/checked/view/${examId}`)}
+                >
+                  View Paper
+                </Button>
+              </Box>
             </Stack>
           </Paper>
         </Container>
