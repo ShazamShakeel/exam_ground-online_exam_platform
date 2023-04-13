@@ -157,6 +157,7 @@ const initialState = {
   profileImg: "",
   isLoggedIn: false,
   loading: false,
+  imageLoading: false,
   error: "",
 };
 
@@ -229,16 +230,16 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(updateProfileImg.pending, (state) => {
-        state.loading = true;
+        state.imageLoading = true;
         state.error = "";
       })
       .addCase(updateProfileImg.fulfilled, (state, action) => {
         state.profileImg = action?.payload?.profileImg;
-        state.loading = false;
+        state.imageLoading = false;
         state.error = "";
       })
       .addCase(updateProfileImg.rejected, (state, action) => {
-        state.loading = false;
+        state.imageLoading = false;
         state.error = action.payload;
       })
       .addCase(verifyEmail.pending, (state) => {
