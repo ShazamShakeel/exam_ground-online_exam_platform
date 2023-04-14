@@ -102,7 +102,9 @@ function StudentExams() {
                       size="small"
                       variant="contained"
                       disabled={dayjs(exam?.date).isAfter(dayjs(), "day")}
-                      onClick={() => navigate(`/exams/attempt/${exam.id}`)}
+                      onClick={() =>
+                        navigate(`/exams/attempt/${exam.id ?? exam._id}`)
+                      }
                       sx={{ mt: 2 }}
                     >
                       Attempt Exam
