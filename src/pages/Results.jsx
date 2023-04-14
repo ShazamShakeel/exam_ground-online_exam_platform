@@ -126,7 +126,11 @@ function Results() {
         },
       })
       .then((res) => {
-        setResults(res?.data?.results);
+        let results = res?.data?.results;
+        if (user.userRole === "student") {
+          results = results.reverse();
+        }
+        setResults(results);
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message ?? "Something went wrong");
