@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Button,
@@ -17,12 +18,15 @@ import {
 } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import ExamRulesPreview from "components/Exams/AttemptExam/ExamRulesPreview";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { editDiagram } from "services/Diagram-Editor";
 import decodeHTML from "utils/helpers/decodeHTML";
 import axiosInstance from "utils/httpRequest/axiosInstance";
+
+let isSubmitted = false;
+let isCheated = false;
 
 export default function AttemptExam() {
   const navigate = useNavigate();
@@ -39,13 +43,12 @@ export default function AttemptExam() {
   const [selectedOption, setSelectedOption] = useState("");
   const [answerText, setAnswerText] = useState("");
   const [diagram, setDiagram] = useState("");
-  const [isCheated, setIsCheated] = useState(false);
 
   const handleStartExam = () => {
     // eslint-disable-next-line no-restricted-globals
     if (screen.width > window.innerWidth) {
-      alert(
-        "Please use only one screen, you are using multiple instances of apps"
+      return toast.info(
+        "You are using multiple screens, please use only one screen to attempt the exam."
       );
     } else {
       // Do something if the user is not using multiple screens
@@ -61,7 +64,7 @@ export default function AttemptExam() {
     }
   };
 
-  const handleAttemptedQuestion = useCallback(() => {
+  const handleAttemptedQuestion = () => {
     const question = questions[currentQuestionIndex];
     if (isMcqExam) {
       question.selectedOption = selectedOption;
@@ -82,17 +85,12 @@ export default function AttemptExam() {
     setAnswerText("");
     setDiagram("");
     return newQuestions;
-  }, [
-    answerText,
-    currentQuestionIndex,
-    diagram,
-    isExamStarted,
-    isMcqExam,
-    questions,
-    selectedOption,
-  ]);
+  };
 
-  const submitExam = useCallback(() => {
+  const submitExam = () => {
+    if (isSubmitted) return;
+
+    isSubmitted = true;
     const _questions = handleAttemptedQuestion();
     const data = {
       exam: exam.id ?? exam._id,
@@ -111,26 +109,27 @@ export default function AttemptExam() {
         return acc;
       }, 0);
     }
-    console.log("data", data);
     axiosInstance
       .post("/answer", data)
       .then(() => {
-        toast.success(
-          isMcqExam
-            ? "Exam submitted successfully"
-            : "Exam submitted successfully, you will be able to check your result after teacher checks your answers"
-        );
-        navigate(isMcqExam ? "/results" : "/dashboard");
+        if (isCheated && !isSubmitted)
+          toast.info("Exam is submitted due to cheating.");
+        else
+          toast.success(
+            isMcqExam
+              ? "Your exam has been submitted."
+              : "Your exam has been submitted, you will be able to check your result after teacher checks your attempt."
+          );
+        navigate("/results");
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
       });
-    navigate(isMcqExam ? "/results" : "/dashboard");
     document.fullscreenElement &&
       document?.exitFullscreen().then(() => {
         console.log("Exited fullscreen mode successfully");
       });
-  }, [exam, handleAttemptedQuestion, isMcqExam, navigate]);
+  };
 
   useEffect(() => {
     exam && setTime(duration * 60);
@@ -146,20 +145,27 @@ export default function AttemptExam() {
   }, [isExamStarted]);
 
   useEffect(() => {
+    isExamStarted && time === 0 && submitExam();
+  }, [isExamStarted, time]);
+
+  useEffect(() => {
     if (isExamStarted) {
       document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement) {
-          // console.log("You exit the fullscreen mode");
+          console.log("User: Fullscreen mode exited");
+          isCheated = true;
           submitExam();
         }
       });
-      document.addEventListener("mouseleave", function () {
-        // toast.info("You leaved the screen");
-        console.log("Mouse leaved the document body");
-        // Do something when the mouse leaves the document body
-      });
+      document
+        .getElementById("exam-container")
+        .addEventListener("mouseleave", function () {
+          console.log("User: Mouse leave by user");
+          isCheated = true;
+          submitExam();
+        });
     }
-  }, [isExamStarted, submitExam]);
+  }, [isExamStarted]);
 
   useEffect(() => {
     setLoading(true);
@@ -189,6 +195,7 @@ export default function AttemptExam() {
         display="flex"
         justifyContent="center"
         alignItems="center"
+        id="exam-container"
       >
         <CircularProgress />
       </Box>
