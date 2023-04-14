@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import {
   updatePassword,
   updateProfile,
@@ -22,6 +21,7 @@ function Profile() {
   const profileImageInputRef = useRef();
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.auth.loading);
+  const imageLoading = useSelector((state) => state.auth.imageLoading);
   const user = useSelector((state) => state.auth);
   const [nameError, setNameError] = useState("");
   const [name, setName] = useState("");
@@ -47,27 +47,17 @@ function Profile() {
     } else setPasswordError("");
 
     if (user.name !== name) {
-      dispatch(updateProfile({ name }))
-        .unwrap()
-        .then(() => toast.success("Profile updated successfully"));
+      dispatch(updateProfile({ name }));
     }
     if (password) {
-      dispatch(updatePassword({ password }))
-        .unwrap()
-        .then(() => {
-          toast.success("Password updated successfully");
-        });
+      dispatch(updatePassword({ password }));
     }
   };
 
   const handleProfileImage = (e) => {
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
-    dispatch(updateProfileImg(formData))
-      .unwrap()
-      .then(() => {
-        toast.success("Profile image updated successfully");
-      });
+    dispatch(updateProfileImg(formData));
   };
 
   return (
@@ -112,7 +102,7 @@ function Profile() {
                 onClick={() => {
                   profileImageInputRef.current.click();
                 }}
-                disabled={loading}
+                disabled={imageLoading}
               >
                 Change Profile Picture
               </Button>

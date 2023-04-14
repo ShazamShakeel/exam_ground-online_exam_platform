@@ -32,7 +32,7 @@ export default function LoginForm() {
     email: Yup.string()
       .email("Please provide your university email")
       .matches(
-        /^[a-zA-Z0-9_.+-]+@(numl|numls|bahria|fast)\.edu.pk$/,
+        /^[a-zA-Z0-9_.+-]+@(numl|numls|bahria|fast)\.edu.pk|[a-zA-Z0-9_.+-]+@gmail\.com$/,
         "University email is incorrect"
       )
       .required("Email is required"),

@@ -46,7 +46,7 @@ export default function SignUpForm() {
         .required("Email is required")
         .email("Please provide your university email")
         .matches(
-          /^[a-zA-Z0-9_.+-]+@(numl|bahria|fast)\.edu.pk$/,
+          /^[a-zA-Z0-9_.+-]+@(numl|bahria|fast)\.edu.pk|[a-zA-Z0-9_.+-]+@gmail\.com$/,
           "University email is incorrect"
         ),
       otherwise: Yup.string()
