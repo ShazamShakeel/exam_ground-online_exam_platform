@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import ExamRulesPreview from "components/Exams/AttemptExam/ExamRulesPreview";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -91,6 +92,17 @@ export default function AttemptExam() {
     if (isSubmitted) return;
 
     isSubmitted = true;
+
+    if (dayjs(exam.date).isBefore(dayjs())) {
+      if (isCheated && !isSubmitted)
+        toast.info("Exam is submitted due to cheating.");
+      document.fullscreenElement &&
+        document?.exitFullscreen().then(() => {
+          console.log("Exited fullscreen mode successfully");
+        });
+      return navigate("/courses/" + exam.course.id);
+    }
+
     const _questions = handleAttemptedQuestion();
     const data = {
       exam: exam.id ?? exam._id,
@@ -182,6 +194,13 @@ export default function AttemptExam() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    return () => {
+      isCheated = false;
+      isSubmitted = false;
+    };
+  }, []);
 
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);

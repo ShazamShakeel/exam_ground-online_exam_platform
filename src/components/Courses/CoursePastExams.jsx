@@ -1,11 +1,12 @@
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import Carousel from "react-multi-carousel";
+import { useNavigate } from "react-router-dom";
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
 export default function CoursePastExams({ exams }) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const responsive = {
     xxxl: {
       breakpoint: { max: 4000, min: 1920 },
@@ -62,6 +63,7 @@ export default function CoursePastExams({ exams }) {
                 p: 2,
                 m: 1,
               }}
+              position="relative"
             >
               <Stack direction="column" gap={1}>
                 <Typography variant="subtitle1" textAlign="center">
@@ -85,11 +87,11 @@ export default function CoursePastExams({ exams }) {
                   {`${exam?.duration ?? ""} minutes`}
                 </Typography>
               </Stack>
-              <Box mt={1} textAlign="right">
+              <Box position="absolute" bottom="1rem" right="1rem">
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => null}
+                  onClick={() => navigate(`/exams/attempt/${exam?.id}`)}
                 >
                   Practice
                 </Button>
