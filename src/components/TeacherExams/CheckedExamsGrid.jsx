@@ -147,13 +147,13 @@ function CheckedExamsGrid() {
     {
       field: "date",
       headerName: "Date",
-      minWidth: 150,
+      minWidth: 200,
       flex: 0.25,
       headerAlign: "center",
       align: "center",
       renderCell: (params) => (
         <Typography variant="body1">
-          {dayjs(params?.row?.createdAt).format("LL")}
+          {dayjs(params?.row?.createdAt).format("lll")}
         </Typography>
       ),
     },

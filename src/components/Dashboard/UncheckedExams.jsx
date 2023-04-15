@@ -105,7 +105,7 @@ export default function UncheckedExams({ uncheckedExams }) {
         </Carousel>
       ) : (
         <Typography variant="body1" color="text.secondary">
-          No courses found
+          No Unchecked Exams to show
         </Typography>
       )}
       <Divider variant="middle" sx={{ my: 2 }} />

@@ -16,8 +16,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import ExamRulesPreview from "components/Exams/AttemptExam/ExamRulesPreview";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -27,6 +28,7 @@ import axiosInstance from "utils/httpRequest/axiosInstance";
 
 let isSubmitted = false;
 let isCheated = false;
+let isSubmittedFunctionCalled = false;
 
 export default function AttemptExam() {
   const navigate = useNavigate();
@@ -89,46 +91,63 @@ export default function AttemptExam() {
 
   const submitExam = () => {
     if (isSubmitted) return;
+    if (isSubmittedFunctionCalled) return;
+    isSubmittedFunctionCalled = true;
 
-    isSubmitted = true;
-    const _questions = handleAttemptedQuestion();
-    const data = {
-      exam: exam.id ?? exam._id,
-      teacher: exam.teacher.id ?? exam.teacher._id,
-      questions: _questions,
-    };
-    if (!isMcqExam) {
-      data.status = "unchecked";
+    if (dayjs(exam.date).isBefore(dayjs(), "day")) {
+      isCheated &&
+        !isSubmitted &&
+        toast.info("Exam is submitted due to cheating.");
+      isSubmitted = true;
+      document.fullscreenElement &&
+        document?.exitFullscreen().then(() => {
+          console.log("Exited fullscreen mode successfully");
+        });
+      navigate("/courses/" + exam.course.id);
+    } else {
+      const _questions = handleAttemptedQuestion();
+      const data = {
+        exam: exam.id ?? exam._id,
+        teacher: exam.teacher.id ?? exam.teacher._id,
+        questions: _questions,
+      };
+      if (!isMcqExam) {
+        data.status = "unchecked";
+      }
+      if (isMcqExam) {
+        data.status = "checked";
+        data.obtainedMarks = _questions.reduce((acc, question) => {
+          if (question.selectedOption === question.correctOption) {
+            return acc + (Number(exam.eachMcqMarks) ?? 0);
+          }
+          return acc;
+        }, 0);
+      }
+      axiosInstance
+        .post("/answer", data)
+        .then(() => {
+          if (isCheated && !isSubmitted)
+            toast.info("Exam is submitted due to cheating.");
+
+          if (!isCheated && !isSubmitted)
+            toast.success(
+              isMcqExam
+                ? "Your exam has been submitted."
+                : "Your exam has been submitted, you will be able to check your result after teacher checks your attempt."
+            );
+
+          isSubmitted = true;
+          document.fullscreenElement &&
+            document?.exitFullscreen().then(() => {
+              console.log("Exited fullscreen mode successfully");
+            });
+
+          navigate("/results");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message ?? "Something went wrong");
+        });
     }
-    if (isMcqExam) {
-      data.status = "checked";
-      data.obtainedMarks = _questions.reduce((acc, question) => {
-        if (question.selectedOption === question.correctOption) {
-          return acc + (Number(exam.eachMcqMarks) ?? 0);
-        }
-        return acc;
-      }, 0);
-    }
-    axiosInstance
-      .post("/answer", data)
-      .then(() => {
-        if (isCheated && !isSubmitted)
-          toast.info("Exam is submitted due to cheating.");
-        else
-          toast.success(
-            isMcqExam
-              ? "Your exam has been submitted."
-              : "Your exam has been submitted, you will be able to check your result after teacher checks your attempt."
-          );
-        navigate("/results");
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message ?? "Something went wrong");
-      });
-    document.fullscreenElement &&
-      document?.exitFullscreen().then(() => {
-        console.log("Exited fullscreen mode successfully");
-      });
   };
 
   useEffect(() => {
@@ -152,17 +171,15 @@ export default function AttemptExam() {
     if (isExamStarted) {
       document.addEventListener("fullscreenchange", function () {
         if (!document.fullscreenElement) {
-          console.log("User: Fullscreen mode exited");
           isCheated = true;
-          submitExam();
+          !isSubmitted && submitExam();
         }
       });
       document
         .getElementById("exam-container")
         .addEventListener("mouseleave", function () {
-          console.log("User: Mouse leave by user");
           isCheated = true;
-          submitExam();
+          !isSubmitted && submitExam();
         });
     }
   }, [isExamStarted]);
@@ -182,6 +199,12 @@ export default function AttemptExam() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    isCheated = false;
+    isSubmitted = false;
+    isSubmittedFunctionCalled = false;
+  }, []);
 
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
@@ -277,6 +300,21 @@ export default function AttemptExam() {
                     <strong>{`(${questions[currentQuestionIndex]?.marks})`}</strong>
                   )}
                 </Box>
+                {questions[currentQuestionIndex]?.diagram && (
+                  <Box my={1}>
+                    <img
+                      src={questions[currentQuestionIndex]?.diagram}
+                      alt="question"
+                      width="250px"
+                      height="auto"
+                      style={{
+                        padding: "1rem",
+                        border: `2px solid ${grey[700]}`,
+                        aspectRatio: "1/1",
+                      }}
+                    />
+                  </Box>
+                )}
                 {isMcqExam && (
                   <FormControl sx={{ ml: 1, my: 2 }}>
                     <FormLabel id="options" sx={{ fontSize: "1.5rem" }}>
@@ -352,7 +390,7 @@ export default function AttemptExam() {
                 )}
               </>
             )}
-            <Box position="absolute" bottom="2rem" right="2rem">
+            <Box position="absolute" bottom="-4rem" right="0.75rem">
               {isExamStarted && currentQuestionIndex + 1 < questions.length && (
                 <Button
                   variant="contained"

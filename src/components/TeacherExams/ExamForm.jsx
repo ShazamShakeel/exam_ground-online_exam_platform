@@ -9,8 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import blue from "@mui/material/colors/blue";
+import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -319,12 +319,12 @@ export default function ExamForm() {
             variant="h6"
             fontWeight="bold"
             color="primary"
-            minWidth={100}
+            minWidth={110}
           >
             Exam Date:
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
+            <DateTimePicker
               label="Date"
               value={date}
               onChange={(value) => {

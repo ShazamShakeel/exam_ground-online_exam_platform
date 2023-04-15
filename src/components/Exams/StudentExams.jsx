@@ -13,6 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "utils/httpRequest/axiosInstance";
 const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
+const isSameOrBefore = require("dayjs/plugin/isSameOrBefore");
+const duration = require("dayjs/plugin/duration");
+dayjs.extend(duration);
+dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 function StudentExams() {
@@ -29,7 +33,7 @@ function StudentExams() {
           let examDate = new Date(exam.date);
           return dayjs(examDate).isSameOrAfter(dayjs(), "day");
         });
-        setExams(exams.reverse());
+        setExams(exams);
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
@@ -65,7 +69,7 @@ function StudentExams() {
                   key={exam?._id ?? exam?.id}
                   elevation={3}
                   sx={{
-                    height: { xs: "250px", lg: "300px" },
+                    height: { xs: "275px", lg: "315px" },
                     width: { lg: "300px", xl: "300px" },
                     m: 1,
                     position: "relative",
@@ -74,7 +78,7 @@ function StudentExams() {
                   <Stack direction="column" gap={1} p={2}>
                     <Typography variant="subtitle1" textAlign="center">
                       <strong>Date: </strong>
-                      {dayjs(exam?.date).format("LL")}
+                      {dayjs(exam?.date).format("lll")}
                     </Typography>
                     <Typography variant="body1">
                       <strong>Title: </strong>
@@ -96,12 +100,34 @@ function StudentExams() {
                       <strong>Duration: </strong>
                       {exam?.duration}
                     </Typography>
+                    {dayjs().isSameOrAfter(dayjs(exam?.date)) &&
+                      dayjs().isSameOrBefore(
+                        dayjs(exam?.date).add(+exam?.duration, "minute")
+                      ) && (
+                        <Typography variant="body1" color="error.light">
+                          <strong>Remaining Time: </strong>
+                          {dayjs
+                            .duration(
+                              dayjs(exam?.date)
+                                .add(+exam?.duration, "minute")
+                                .diff(dayjs())
+                            )
+                            .minutes()}
+                        </Typography>
+                      )}
                   </Stack>
                   <Box position="absolute" bottom="0.75rem" right="0.75rem">
                     <Button
                       size="small"
                       variant="contained"
-                      disabled={dayjs(exam?.date).isAfter(dayjs(), "day")}
+                      disabled={
+                        !(
+                          dayjs().isSameOrAfter(dayjs(exam?.date)) &&
+                          dayjs().isSameOrBefore(
+                            dayjs(exam?.date).add(+exam?.duration, "minute")
+                          )
+                        )
+                      }
                       onClick={() =>
                         navigate(`/exams/attempt/${exam.id ?? exam._id}`)
                       }
