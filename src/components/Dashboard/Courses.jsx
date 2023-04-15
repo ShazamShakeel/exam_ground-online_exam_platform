@@ -104,7 +104,7 @@ export default function Courses({ courses }) {
         </Carousel>
       ) : (
         <Typography variant="body1" color="text.secondary">
-          No courses found
+          No courses to show
         </Typography>
       )}
       <Divider variant="middle" sx={{ my: 2 }} />
