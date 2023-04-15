@@ -12,7 +12,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -74,6 +74,7 @@ export default function SignUpForm() {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
@@ -108,6 +109,19 @@ export default function SignUpForm() {
   const handleTabChange = (_, newValue) => {
     setSelectedTab(newValue);
   };
+
+  useEffect(() => {
+    reset({
+      employeeId: "",
+      studentId: "",
+      firstName: "",
+      lastName: "",
+      university: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+  }, [reset, selectedTab]);
 
   return (
     <Box
