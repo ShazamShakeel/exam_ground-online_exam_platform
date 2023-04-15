@@ -117,13 +117,13 @@ function ExamsGrid() {
     {
       field: "date",
       headerName: "Date",
-      minWidth: 150,
+      minWidth: 200,
       flex: 0.25,
       headerAlign: "center",
       align: "center",
       renderCell: (params) => (
         <Typography variant="body1">
-          {dayjs(params?.row?.date).format("LL")}
+          {dayjs(params?.row?.date).format("lll")}
         </Typography>
       ),
     },

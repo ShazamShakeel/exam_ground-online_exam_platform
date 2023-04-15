@@ -29,7 +29,7 @@ function StudentExams() {
           let examDate = new Date(exam.date);
           return dayjs(examDate).isSameOrAfter(dayjs(), "day");
         });
-        setExams(exams.reverse());
+        setExams(exams);
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
@@ -74,7 +74,7 @@ function StudentExams() {
                   <Stack direction="column" gap={1} p={2}>
                     <Typography variant="subtitle1" textAlign="center">
                       <strong>Date: </strong>
-                      {dayjs(exam?.date).format("LL")}
+                      {dayjs(exam?.date).format("lll")}
                     </Typography>
                     <Typography variant="body1">
                       <strong>Title: </strong>
@@ -101,7 +101,7 @@ function StudentExams() {
                     <Button
                       size="small"
                       variant="contained"
-                      disabled={dayjs(exam?.date).isAfter(dayjs(), "day")}
+                      disabled={dayjs(exam?.date).isSameOrAfter(dayjs())}
                       onClick={() =>
                         navigate(`/exams/attempt/${exam.id ?? exam._id}`)
                       }
