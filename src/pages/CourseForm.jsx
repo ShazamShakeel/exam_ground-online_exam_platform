@@ -1,9 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ContentCopy, LibraryAddCheck } from "@mui/icons-material";
 import {
   Autocomplete,
   Box,
   Button,
   Divider,
+  IconButton,
   Stack,
   TextField,
   Typography,
@@ -28,6 +30,7 @@ function CourseForm() {
   const [courseStudents, setCourseStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const {
     control,
@@ -247,9 +250,20 @@ function CourseForm() {
               <TextField
                 size="small"
                 fullWidth
-                value={`https://examground.com/course/join/${course?.id}`}
+                value={`https://examground.netlify.app/courses/join/${course?.id}`}
                 sx={{ bgcolor: "white" }}
               />
+              <IconButton
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `https://examground.netlify.app/courses/join/${course?.id}`
+                  );
+                  toast.info("Course share link copied to clipboard");
+                  setIsCopied(true);
+                }}
+              >
+                {isCopied ? <LibraryAddCheck /> : <ContentCopy />}
+              </IconButton>
             </Stack>
           )}
           <Box textAlign="center" my={2}>
