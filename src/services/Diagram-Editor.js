@@ -282,6 +282,7 @@ DiagramEditor.prototype.createFrame = function (url, style) {
   frame.setAttribute("frameborder", "0");
   frame.setAttribute("style", style);
   frame.setAttribute("src", url);
+  frame.setAttribute("id", "drawioFrame");
 
   return frame;
 };

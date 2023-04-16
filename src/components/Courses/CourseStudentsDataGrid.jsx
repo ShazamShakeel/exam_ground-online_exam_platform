@@ -12,8 +12,8 @@ function CourseStudentsDataGrid({
     {
       field: "id",
       headerName: "Student ID",
-      minWidth: 75,
-      flex: 0.25,
+      minWidth: 125,
+      flex: 0.5,
       renderCell: (params) => (
         <Typography variant="body1" color="text.secondary">
           {params?.row?.universityId}

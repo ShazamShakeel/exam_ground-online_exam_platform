@@ -29,7 +29,7 @@ export default function SignUpForm() {
   const validationSchema = Yup.object().shape({
     employeeId: Yup.string().when([], {
       is: () => selectedTab === "teacher",
-      then: Yup.string().required("Required").min(6).max(12),
+      then: Yup.string().required("Required").min(6).max(8),
       otherwise: Yup.string().notRequired(),
     }),
     studentId: Yup.string().when([], {
