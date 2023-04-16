@@ -313,6 +313,9 @@ export default function ExamForm() {
             error={!!durationError}
             helperText={durationError}
           />
+          <Typography variant="h6" fontWeight="bold" color="text.disabled">
+            minutes
+          </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography

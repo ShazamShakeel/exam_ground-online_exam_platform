@@ -50,19 +50,10 @@ export default function AttemptExam() {
     // eslint-disable-next-line no-restricted-globals
     if (screen.width > window.innerWidth) {
       return toast.info(
-        "You are using multiple screens, please use only one screen to attempt the exam."
+        "You are using multiple screens, please use only one screen to attempt the exam. Open Browser in full screen mode."
       );
     } else {
-      // Do something if the user is not using multiple screens
-      enterFullScreen();
-    }
-  };
-
-  const enterFullScreen = () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().then(() => {
-        setIsExamStarted(true);
-      });
+      setIsExamStarted(true);
     }
   };
 
@@ -89,20 +80,26 @@ export default function AttemptExam() {
     return newQuestions;
   };
 
+  const handleEditor = () => {
+    const isFrame = document.getElementById("drawioFrame");
+    if (isFrame) {
+      isFrame.remove();
+    }
+  };
+
   const submitExam = () => {
     if (isSubmitted) return;
     if (isSubmittedFunctionCalled) return;
     isSubmittedFunctionCalled = true;
+
+    document.removeEventListener("mouseleave", handleLeave);
 
     if (dayjs(exam.date).isBefore(dayjs(), "day")) {
       isCheated &&
         !isSubmitted &&
         toast.info("Exam is submitted due to cheating.");
       isSubmitted = true;
-      document.fullscreenElement &&
-        document?.exitFullscreen().then(() => {
-          console.log("Exited fullscreen mode successfully");
-        });
+      handleEditor();
       navigate("/courses/" + exam.course.id);
     } else {
       const _questions = handleAttemptedQuestion();
@@ -137,11 +134,7 @@ export default function AttemptExam() {
             );
 
           isSubmitted = true;
-          document.fullscreenElement &&
-            document?.exitFullscreen().then(() => {
-              console.log("Exited fullscreen mode successfully");
-            });
-
+          handleEditor();
           navigate("/results");
         })
         .catch((err) => {
@@ -169,20 +162,14 @@ export default function AttemptExam() {
 
   useEffect(() => {
     if (isExamStarted) {
-      document.addEventListener("fullscreenchange", function () {
-        if (!document.fullscreenElement) {
-          isCheated = true;
-          !isSubmitted && submitExam();
-        }
-      });
-      document
-        .getElementById("exam-container")
-        .addEventListener("mouseleave", function () {
-          isCheated = true;
-          !isSubmitted && submitExam();
-        });
+      document.addEventListener("mouseleave", handleLeave);
     }
   }, [isExamStarted]);
+
+  const handleLeave = () => {
+    isCheated = true;
+    !isSubmitted && !isSubmittedFunctionCalled && submitExam();
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -213,8 +200,8 @@ export default function AttemptExam() {
   if (loading)
     return (
       <Box
-        height="100vh"
-        width="100vw"
+        minHeight="100vh"
+        minWidth="100vw"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -226,7 +213,7 @@ export default function AttemptExam() {
 
   return (
     <Box id="exam-container">
-      <Box height="100vh" display="flex" alignItems="center">
+      <Box minHeight="100vh" width="100vw" display="flex" alignItems="center">
         <Container
           component="main"
           maxWidth="lg"

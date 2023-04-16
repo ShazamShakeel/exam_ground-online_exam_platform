@@ -113,6 +113,7 @@ function StudentExams() {
                                 .diff(dayjs())
                             )
                             .minutes()}
+                          {` minutes`}
                         </Typography>
                       )}
                   </Stack>

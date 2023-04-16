@@ -11,8 +11,7 @@ export default function ExamRulesPreview({ handleStartExam }) {
         previous page.
       </Typography>
       <Typography variant="body1">
-        {`- When the exam will be started the screen will enter to the fullscreen.
-        Don't exit the fullscreen. Otherwise the paper will be submitted
+        {`- When the exam will be started the screen will be monitored. If the system detected that your mouse is out of the exam window, the paper will be submitted
         automatically.`}
       </Typography>
       <Typography variant="body1">

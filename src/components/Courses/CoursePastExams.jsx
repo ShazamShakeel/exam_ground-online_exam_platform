@@ -1,12 +1,14 @@
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import Carousel from "react-multi-carousel";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
 export default function CoursePastExams({ exams }) {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth);
   const responsive = {
     xxxl: {
       breakpoint: { max: 4000, min: 1920 },
@@ -58,12 +60,11 @@ export default function CoursePastExams({ exams }) {
               key={exam?.id}
               elevation={3}
               sx={{
-                height: { xs: "200px", lg: "250px" },
-                width: { lg: "300px", xl: "300px" },
+                height: "250px",
+                width: "300px",
                 p: 2,
                 m: 1,
               }}
-              position="relative"
             >
               <Stack direction="column" gap={1}>
                 <Typography variant="subtitle1" textAlign="center">
@@ -87,15 +88,17 @@ export default function CoursePastExams({ exams }) {
                   {`${exam?.duration ?? ""} minutes`}
                 </Typography>
               </Stack>
-              <Box position="absolute" bottom="1rem" right="1rem">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => navigate(`/exams/attempt/${exam?.id}`)}
-                >
-                  Practice
-                </Button>
-              </Box>
+              {user.userRole === "student" && (
+                <Box textAlign="right">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate(`/exams/attempt/${exam?.id}`)}
+                  >
+                    Practice
+                  </Button>
+                </Box>
+              )}
             </Card>
           ))}
         </Carousel>
