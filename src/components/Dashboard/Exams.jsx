@@ -96,29 +96,24 @@ export default function Exams({ exams }) {
                   {exam?.duration} minutes
                 </Typography>
               </Stack>
-              <Box position="absolute" bottom="0.75rem" right="0.75rem">
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => {
-                    if (user.userRole === "student")
-                      navigate(`/exams/attempt/${exam._id}`);
-                    else if (user.userRole === "teacher")
+              {user.userRole === "teacher" && (
+                <Box position="absolute" bottom="0.75rem" right="0.75rem">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={() =>
                       navigate(
                         `/exams/edit/${
                           exam.type === "mcq" ? "mcq-exam" : "subjective-exam"
                         }/${exam.id}`
-                      );
-                  }}
-                  sx={{ mt: 2 }}
-                  disabled={
-                    user.userRole === "student" &&
-                    dayjs(exam?.date).isAfter(dayjs(), "day")
-                  }
-                >
-                  {user.userRole === "student" ? "Attempt Exam" : "Edit Exam"}
-                </Button>
-              </Box>
+                      )
+                    }
+                    sx={{ mt: 2 }}
+                  >
+                    Edit Exam
+                  </Button>
+                </Box>
+              )}
             </Card>
           ))}
         </Carousel>

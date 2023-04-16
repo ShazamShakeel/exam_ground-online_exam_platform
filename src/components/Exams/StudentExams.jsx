@@ -23,17 +23,19 @@ function StudentExams() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [exams, setExams] = useState([]);
+  const [attemptedExams, setAttemptedExams] = useState([]);
 
   useEffect(() => {
     axiosInstance
       .get("/exam")
       .then((res) => {
-        let exams = res.data;
+        let exams = res.data.exams;
         exams = exams.filter((exam) => {
           let examDate = new Date(exam.date);
           return dayjs(examDate).isSameOrAfter(dayjs(), "day");
         });
         setExams(exams);
+        setAttemptedExams(res.data.attemptedExams);
       })
       .catch((err) => {
         toast.error(err.response.data.message ?? "Something went wrong");
@@ -127,7 +129,7 @@ function StudentExams() {
                           dayjs().isSameOrBefore(
                             dayjs(exam?.date).add(+exam?.duration, "minute")
                           )
-                        )
+                        ) || attemptedExams.includes(exam.id ?? exam._id)
                       }
                       onClick={() =>
                         navigate(`/exams/attempt/${exam.id ?? exam._id}`)
