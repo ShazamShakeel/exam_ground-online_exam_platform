@@ -26,7 +26,6 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const loading = useSelector((state) => state.auth.loading);
-  const error = useSelector((state) => state.auth.error);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -161,11 +160,6 @@ export default function LoginForm() {
                   />
                 )}
               />
-              {error && (
-                <Typography variant="body2" color="error">
-                  {error}
-                </Typography>
-              )}
               <Button
                 type="submit"
                 variant="contained"

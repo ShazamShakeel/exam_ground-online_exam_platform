@@ -71,7 +71,7 @@ function StudentExams() {
                   key={exam?._id ?? exam?.id}
                   elevation={3}
                   sx={{
-                    height: { xs: "275px", lg: "315px" },
+                    height: "365px",
                     width: { lg: "300px", xl: "300px" },
                     m: 1,
                     position: "relative",
@@ -101,6 +101,10 @@ function StudentExams() {
                     <Typography variant="body1">
                       <strong>Duration: </strong>
                       {exam?.duration}
+                    </Typography>
+                    <Typography variant="body1" textTransform="capitalize">
+                      <strong>Exam Type: </strong>
+                      {exam?.type}
                     </Typography>
                     {dayjs().isSameOrAfter(dayjs(exam?.date)) &&
                       dayjs().isSameOrBefore(
