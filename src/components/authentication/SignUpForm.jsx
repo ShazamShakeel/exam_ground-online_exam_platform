@@ -16,7 +16,9 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { signup } from "store/slices/authSlice";
+import axiosInstance from "utils/httpRequest/axiosInstance";
 import * as Yup from "yup";
 
 export default function SignUpForm() {
@@ -27,16 +29,7 @@ export default function SignUpForm() {
   const [selectedTab, setSelectedTab] = useState("teacher");
 
   const validationSchema = Yup.object().shape({
-    employeeId: Yup.string().when([], {
-      is: () => selectedTab === "teacher",
-      then: Yup.string().required("Required").min(6).max(8),
-      otherwise: Yup.string().notRequired(),
-    }),
-    studentId: Yup.string().when([], {
-      is: () => selectedTab === "student",
-      then: Yup.string().required("Required").min(6).max(12),
-      otherwise: Yup.string().notRequired(),
-    }),
+    universityId: Yup.string().required("Required").min(6).max(8),
     firstName: Yup.string().required("Required").max(12),
     lastName: Yup.string().required("Required").max(12),
     university: Yup.string().required("Required"),
@@ -78,8 +71,7 @@ export default function SignUpForm() {
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      employeeId: "",
-      studentId: "",
+      universityId: "",
       firstName: "",
       lastName: "",
       university: "",
@@ -89,12 +81,22 @@ export default function SignUpForm() {
     },
   });
 
+  const sendEmailOTP = () => {
+    axiosInstance
+      .post("auth/send-verification-email")
+      .then((response) => toast.success(response.data.message))
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
+  };
+
   const onSubmit = (data) => {
+    console.log("data", data);
     dispatch(
       signup({
         email: data?.email ?? "",
         name: data?.firstName + " " + data?.lastName ?? "",
-        universityId: data?.employeeId ?? data?.studentId ?? "",
+        universityId: data?.universityId ?? "",
         role: selectedTab === "teacher" ? "teacher" : "student",
         university: data?.university ?? "",
         password: data?.password ?? "",
@@ -102,6 +104,7 @@ export default function SignUpForm() {
     )
       .unwrap()
       .then(() => {
+        sendEmailOTP();
         navigate("/verification");
       });
   };
@@ -112,8 +115,7 @@ export default function SignUpForm() {
 
   useEffect(() => {
     reset({
-      employeeId: "",
-      studentId: "",
+      universityId: "",
       firstName: "",
       lastName: "",
       university: "",
@@ -178,40 +180,23 @@ export default function SignUpForm() {
                   <Tab label="Student" value="student" />
                 </Tabs>
               </Box>
-              {selectedTab === "teacher" && (
-                <Controller
-                  name="employeeId"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      name="employeeId"
-                      label="Employee Id"
-                      size="small"
-                      fullWidth
-                      error={!!errors.employeeId}
-                      helperText={errors?.employeeId?.message}
-                      {...field}
-                    />
-                  )}
-                />
-              )}
-              {selectedTab === "student" && (
-                <Controller
-                  name="studentId"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      name="studentId"
-                      label="Student Id"
-                      size="small"
-                      fullWidth
-                      error={!!errors.studentId}
-                      helperText={errors?.studentId?.message}
-                      {...field}
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                name="universityId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name="universityId"
+                    label={
+                      selectedTab === "teacher" ? "Employee Id" : "Student Id"
+                    }
+                    size="small"
+                    fullWidth
+                    error={!!errors.universityId}
+                    helperText={errors?.universityId?.message}
+                    {...field}
+                  />
+                )}
+              />
               <Stack direction={{ xs: "column", md: "row" }} gap={2}>
                 <Controller
                   name="firstName"

@@ -100,7 +100,9 @@ export default function AttemptExam() {
         toast.info("Exam is submitted due to cheating.");
       isSubmitted = true;
       handleEditor();
-      navigate("/courses/" + exam.course.id);
+      navigate("/courses/" + exam.course.id, {
+        replace: true,
+      });
     } else {
       const _questions = handleAttemptedQuestion();
       const data = {
@@ -135,7 +137,9 @@ export default function AttemptExam() {
 
           isSubmitted = true;
           handleEditor();
-          navigate("/results");
+          navigate("/results", {
+            replace: true,
+          });
         })
         .catch((err) => {
           toast.error(err.response.data.message ?? "Something went wrong");
