@@ -17,14 +17,22 @@
     "source.fixAll.eslint": true
   },
   "cSpell.words": [
+    "Autosize",
     "BazaarGhar",
+    "chartjs",
     "commitlint",
+    "datesheet",
+    "datesheets",
+    "faceio",
     "fontsource",
     "highrise",
     "hookform",
+    "Ondemand",
     "persistor",
     "reduxjs",
+    "Roboto",
     "Signup",
+    "tesseract",
     "toastify"
   ]
 }

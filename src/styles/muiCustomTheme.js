@@ -8,15 +8,23 @@ const theme = createTheme({
     primary: blue,
     secondary: brown,
     background: {
-      default: "#F1F9FE",
+      default: "#EDF7FB",
     },
   },
   typography: {
-    fontFamily: "Poppins",
-    fontSize: 16,
+    fontFamily: "Roboto",
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 360,
+      md: 1024,
+      lg: 1280,
+      xl: 1536,
+    },
   },
   shape: {
-    borderRadius: 6,
+    borderRadius: 5,
   },
   components: {
     MuiButton: {

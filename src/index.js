@@ -1,5 +1,8 @@
+import "@fontsource/roboto";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "react-multi-carousel/lib/styles.css";
+import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.min.css";
 import "styles/global.css";
 import App from "./App";
